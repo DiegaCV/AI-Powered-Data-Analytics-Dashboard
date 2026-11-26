@@ -1,4 +1,4 @@
-# Peak-Event Intraday Performance Tracker
+# Claude-Powered Real-Time Business Data Analytics Dashboard
 
 An interactive control-tower dashboard that tracks hourly revenue (GMV) against plan during a one-day sales peak, forecasts where each brand will close, and turns variances into rule-based interventions.
 
