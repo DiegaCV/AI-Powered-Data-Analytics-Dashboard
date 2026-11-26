@@ -1,0 +1,16 @@
+{
+  "hour": 24,
+  "gmv": 154881.43,
+  "target": 115017.75,
+  "achieved": 1.3465872006712007,
+  "expected_share": 1.0,
+  "pace": 1.3465872006712007,
+  "gap": 0.0,
+  "need_per_hour": null,
+  "rate3": 7843.486666666664,
+  "rr_curve": 154881.43,
+  "rr_linear": 154881.43,
+  "orders": 4879.0,
+  "cr": 0.01726071498063078,
+  "status": "On track"
+}

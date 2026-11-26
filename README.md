@@ -74,17 +74,31 @@ Use the hour slider to replay the day and see how the interventions evolve.
 - Data-quality section; light and dark themes; works at phone width
 - Optional upload of your own CSV extracts (see `data/`)
 
+## Python analysis
+
+The same calculation chain is implemented in Python, so the logic can be read, tested and reused outside the dashboard.
+
+- [`python/peak_event_analysis.ipynb`](python/peak_event_analysis.ipynb): the analysis as a story, with an executive summary, charts, interventions and a reconciliation against the dashboard (open it on GitHub, outputs are included)
+- [`python/pipeline.py`](python/pipeline.py): the pandas pipeline (snapshots, hourly aggregation, pace and forecasts, escalation rules)
+- [`python/output/`](python/output): exported results as CSV and JSON
+
+The Python results are identical to the dashboard's: all 144 brand-hour rows and all 366 intervention messages were compared.
+
+To run it yourself: `pip install -r python/requirements.txt`, then `python python/pipeline.py`, or open the notebook in Jupyter.
+
 ## Repository
 
 ```
-index.html          Single-file dashboard (HTML, CSS, JavaScript, d3 v7 from a CDN)
-data/               Sample input tables as CSV (anonymised)
-docs/methodology.md Metric definitions, rules, data contract, limitations
+index.html            Single-file dashboard (HTML, CSS, JavaScript, d3 v7 from a CDN)
+data/                 Sample input tables as CSV (anonymised, EUR)
+python/               Pandas pipeline, analysis notebook, exported results
+screenshots/          Images used in this README
+docs/methodology.md   Metric definitions, rules, data contract, limitations
 ```
 
 ## Skills demonstrated
 
-Business-question framing, KPI and metric design, forecasting against a reference curve, rule-based alerting, data cleaning and quality assurance, data visualisation, and communicating results to non-technical decision makers.
+Business-question framing, KPI and metric design, Python (pandas) analysis and reconciliation, forecasting against a reference curve, rule-based alerting, data cleaning and quality assurance, data visualisation, and communicating results to non-technical decision makers.
 
 ## Limitations
 

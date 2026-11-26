@@ -1,0 +1,367 @@
+hour,slot,kind,rank,brand,text
+24,23.59,Behind,1,Brand A,▼ 18.6% of target · closed €1.6K short
+24,23.59,Funnel flag,3,Brand B,comments ▼ 36.5/1k views (all brands 49.9)
+24,23.59,Funnel flag,3,Brand A,conversion ▼ 2.13% (all brands 2.92%)
+24,23.59,Funnel flag,3,Brand A,views ▼ 290/h (avg 404/h)
+24,23.59,Funnel flag,3,Brand A,comments ▼ 34.9/1k views (all brands 49.9)
+24,23.59,Funnel flag,3,Brand E,conversion ▼ 1.25% (all brands 2.92%)
+24,23.59,Funnel flag,3,Brand F,conversion ▼ 0.56% last hour (day 0.87%)
+24,23.59,Funnel flag,3,Brand F,conversion ▼ 0.85% (all brands 2.92%)
+24,23.59,Funnel flag,3,Brand F,comments ▼ 39.8/1k views (all brands 49.9)
+24,23.59,Paid media,4,Brand C,paid boost switched off
+24,23.59,On track,6,Brand C,▲ 183.2% of target
+24,23.59,On track,6,Brand F,▲ 137.4% of target
+24,23.59,On track,6,Brand E,▲ 136.2% of target
+24,23.59,On track,6,Brand D,▲ 129.3% of target
+24,23.59,On track,6,Brand B,▲ 125.1% of target
+23,23.00,Behind,1,Brand A,▼ pace 18.7% · 17.9% of target · variance €1.6K · required €1.6K/h vs €11/h current
+23,23.00,Funnel flag,3,Brand B,comments ▼ 35.2/1k views (all brands 49.3)
+23,23.00,Funnel flag,3,Brand A,conversion ▼ 2.07% (all brands 2.89%)
+23,23.00,Funnel flag,3,Brand A,views ▼ 310/h (avg 409/h)
+23,23.00,Funnel flag,3,Brand A,comments ▼ 31.5/1k views (all brands 49.3)
+23,23.00,Funnel flag,3,Brand E,conversion ▼ 1.26% (all brands 2.89%)
+23,23.00,Funnel flag,3,Brand F,conversion ▼ 0.55% last hour (day 0.90%)
+23,23.00,Funnel flag,3,Brand F,conversion ▼ 0.87% (all brands 2.89%)
+23,23.00,Paid media,4,Brand C,paid boost switched off
+23,23.00,On track,6,Brand C,▲ pace 178.9% · 171.2% of target
+23,23.00,On track,6,Brand F,▲ pace 137.3% · 131.5% of target
+23,23.00,On track,6,Brand E,▲ pace 135.9% · 130.0% of target
+23,23.00,On track,6,Brand D,▲ pace 130.1% · 124.5% of target
+23,23.00,On track,6,Brand B,▲ pace 121.9% · 116.6% of target
+22,22.00,Behind,1,Brand A,▼ pace 18.5% · 17.0% of target · variance €1.6K · required €796/h vs €12/h current
+22,22.00,Funnel flag,3,Brand B,conversion ▼ 3.22% last hour (day 4.05%)
+22,22.00,Funnel flag,3,Brand B,comments ▼ 34.7/1k views (all brands 48.6)
+22,22.00,Funnel flag,3,Brand A,conversion ▼ 1.32% last hour (day 2.12%)
+22,22.00,Funnel flag,3,Brand A,conversion ▼ 2.05% (all brands 2.87%)
+22,22.00,Funnel flag,3,Brand A,comments ▼ 32.1/1k views (all brands 48.6)
+22,22.00,Funnel flag,3,Brand D,conversion ▼ 1.86% last hour (day 2.86%)
+22,22.00,Funnel flag,3,Brand E,conversion ▼ 1.00% last hour (day 1.27%)
+22,22.00,Funnel flag,3,Brand E,conversion ▼ 1.25% (all brands 2.87%)
+22,22.00,Funnel flag,3,Brand F,conversion ▼ 0.90% (all brands 2.87%)
+22,22.00,Funnel flag,3,Brand C,conversion ▼ 4.75% last hour (day 6.36%)
+22,22.00,Paid media,4,Brand D,ROI ▼ 28.4 (3h ago 37.9) · spend €277
+22,22.00,Paid media,4,Brand C,paid boost switched off
+22,22.00,On track,6,Brand C,▲ pace 172.2% · 158.2% of target
+22,22.00,On track,6,Brand F,▲ pace 136.6% · 125.5% of target
+22,22.00,On track,6,Brand E,▲ pace 133.2% · 122.4% of target
+22,22.00,On track,6,Brand D,▲ pace 129.0% · 118.5% of target
+22,22.00,On track,6,Brand B,▲ pace 118.5% · 108.9% of target
+21,21.00,Behind,1,Brand A,▼ pace 18.8% · 16.4% of target · variance €1.6K · required €535/h vs €16/h current
+21,21.00,Funnel flag,3,Brand B,comments ▼ 33.9/1k views (all brands 48.2)
+21,21.00,Funnel flag,3,Brand A,conversion ▼ 0.68% last hour (day 2.30%)
+21,21.00,Funnel flag,3,Brand A,conversion ▼ 2.12% (all brands 2.93%)
+21,21.00,Funnel flag,3,Brand A,comments ▼ 31.4/1k views (all brands 48.2)
+21,21.00,Funnel flag,3,Brand D,conversion ▼ 1.89% last hour (day 2.94%)
+21,21.00,Funnel flag,3,Brand E,conversion ▼ 1.27% (all brands 2.93%)
+21,21.00,Funnel flag,3,Brand F,conversion ▼ 0.89% (all brands 2.93%)
+21,21.00,Paid media,4,Brand B,ROI ▼ 5.7 (3h ago 31.9) · spend €50
+21,21.00,Paid media,4,Brand D,ROI ▼ 27.8 (3h ago 44.2) · spend €267
+21,21.00,Paid media,4,Brand C,paid boost switched off
+21,21.00,On track,6,Brand C,▲ pace 172.8% · 150.4% of target
+21,21.00,On track,6,Brand E,▲ pace 133.2% · 115.9% of target
+21,21.00,On track,6,Brand F,▲ pace 132.6% · 115.4% of target
+21,21.00,On track,6,Brand D,▲ pace 128.8% · 112.1% of target
+21,21.00,On track,6,Brand B,▲ pace 110.2% · 95.9% of target
+20,20.00,Behind,1,Brand A,▼ pace 19.6% · 16.1% of target · variance €1.6K · required €403/h vs €22/h current
+20,20.00,Funnel flag,3,Brand B,conversion ▼ 2.36% last hour (day 4.23%)
+20,20.00,Funnel flag,3,Brand B,comments ▼ 33.3/1k views (all brands 47.8)
+20,20.00,Funnel flag,3,Brand A,conversion ▼ 1.86% last hour (day 2.35%)
+20,20.00,Funnel flag,3,Brand A,conversion ▼ 2.30% (all brands 2.95%)
+20,20.00,Funnel flag,3,Brand A,comments ▼ 31.7/1k views (all brands 47.8)
+20,20.00,Funnel flag,3,Brand D,conversion ▼ 1.72% last hour (day 3.00%)
+20,20.00,Funnel flag,3,Brand E,conversion ▼ 1.19% (all brands 2.95%)
+20,20.00,Funnel flag,3,Brand E,"views ▼ 1,708/h (avg 2,334/h)"
+20,20.00,Funnel flag,3,Brand F,conversion ▼ 0.64% last hour (day 0.91%)
+20,20.00,Funnel flag,3,Brand F,conversion ▼ 0.90% (all brands 2.95%)
+20,20.00,Funnel flag,3,Brand C,conversion ▼ 4.10% last hour (day 6.48%)
+20,20.00,Paid media,4,Brand B,ROI ▼ 3.9 (3h ago 31.9) · spend €37
+20,20.00,Paid media,4,Brand D,ROI ▼ 31.1 (3h ago 42.1) · spend €221
+20,20.00,Paid media,4,Brand C,paid boost switched off
+20,20.00,On track,6,Brand C,▲ pace 171.3% · 140.7% of target
+20,20.00,On track,6,Brand F,▲ pace 131.6% · 108.1% of target
+20,20.00,On track,6,Brand D,▲ pace 129.4% · 106.3% of target
+20,20.00,On track,6,Brand E,▲ pace 127.0% · 104.3% of target
+20,20.00,On track,6,Brand B,▲ pace 102.5% · 84.2% of target
+19,19.00,Behind,1,Brand A,▼ pace 19.6% · 15.2% of target · variance €1.6K · required €326/h vs €19/h current
+19,19.00,Funnel flag,3,Brand B,conversion ▼ 1.23% last hour (day 4.71%)
+19,19.00,Funnel flag,3,Brand B,comments ▼ 34.4/1k views (all brands 47.5)
+19,19.00,Funnel flag,3,Brand A,conversion ▼ 2.35% (all brands 3.02%)
+19,19.00,Funnel flag,3,Brand A,comments ▼ 32.4/1k views (all brands 47.5)
+19,19.00,Funnel flag,3,Brand E,conversion ▼ 1.14% (all brands 3.02%)
+19,19.00,Funnel flag,3,Brand F,conversion ▼ 0.91% (all brands 3.02%)
+19,19.00,Funnel flag,3,Brand C,conversion ▼ 3.50% last hour (day 6.64%)
+19,19.00,Paid media,4,Brand B,ROI ▼ 3.9 (3h ago 31.9) · spend €24
+19,19.00,Paid media,4,Brand C,paid boost switched off
+19,19.00,On track,6,Brand C,▲ pace 173.3% · 134.3% of target
+19,19.00,On track,6,Brand F,▲ pace 133.9% · 103.8% of target
+19,19.00,On track,6,Brand D,▲ pace 131.3% · 101.8% of target
+19,19.00,On track,6,Brand E,▲ pace 123.8% · 95.9% of target
+19,19.00,On track,6,Brand B,▲ pace 101.4% · 78.6% of target
+18,18.00,Behind,1,Brand A,▼ pace 18.8% · 13.9% of target · variance €1.7K · required €275/h vs €18/h current
+18,18.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 46.5)
+18,18.00,Funnel flag,3,Brand A,conversion ▼ 2.20% (all brands 3.09%)
+18,18.00,Funnel flag,3,Brand A,comments ▼ 32.0/1k views (all brands 46.5)
+18,18.00,Funnel flag,3,Brand D,"views ▼ 3,172/h (avg 3,998/h)"
+18,18.00,Funnel flag,3,Brand E,conversion ▼ 1.09% (all brands 3.09%)
+18,18.00,Funnel flag,3,Brand E,"views ▼ 1,337/h (avg 2,399/h)"
+18,18.00,Funnel flag,3,Brand F,conversion ▼ 0.91% (all brands 3.09%)
+18,18.00,Paid media,4,Brand C,paid boost switched off
+18,18.00,On track,6,Brand C,▲ pace 173.1% · 128.1% of target
+18,18.00,On track,6,Brand F,▲ pace 131.5% · 97.4% of target
+18,18.00,On track,6,Brand D,▲ pace 130.6% · 96.7% of target
+18,18.00,On track,6,Brand E,▲ pace 118.1% · 87.4% of target
+18,18.00,On track,6,Brand B,▲ pace 101.8% · 75.3% of target
+17,17.00,Behind,1,Brand A,▼ pace 18.0% · 12.7% of target · variance €1.7K · required €239/h vs €18/h current
+17,17.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 46.2)
+17,17.00,Funnel flag,3,Brand A,conversion ▼ 1.21% last hour (day 2.29%)
+17,17.00,Funnel flag,3,Brand A,conversion ▼ 2.14% (all brands 3.08%)
+17,17.00,Funnel flag,3,Brand A,comments ▼ 32.8/1k views (all brands 46.2)
+17,17.00,Funnel flag,3,Brand D,"views ▼ 2,837/h (avg 4,071/h)"
+17,17.00,Funnel flag,3,Brand D,AOV ▼ €8 last hour (day €10)
+17,17.00,Funnel flag,3,Brand E,conversion ▼ 1.08% (all brands 3.08%)
+17,17.00,Funnel flag,3,Brand E,"views ▼ 1,054/h (avg 2,483/h)"
+17,17.00,Funnel flag,3,Brand F,conversion ▼ 0.92% (all brands 3.08%)
+17,17.00,Paid media,4,Brand C,paid boost switched off
+17,17.00,On track,6,Brand C,▲ pace 180.3% · 127.2% of target
+17,17.00,On track,6,Brand D,▲ pace 130.7% · 92.3% of target
+17,17.00,On track,6,Brand F,▲ pace 130.2% · 91.9% of target
+17,17.00,On track,6,Brand E,▲ pace 118.8% · 83.8% of target
+17,17.00,On track,6,Brand B,▲ pace 106.7% · 75.3% of target
+16,16.00,Behind,1,Brand A,▼ pace 18.1% · 12.2% of target · variance €1.7K · required €211/h vs €20/h current
+16,16.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 45.9)
+16,16.00,Funnel flag,3,Brand A,conversion ▼ 2.29% (all brands 3.10%)
+16,16.00,Funnel flag,3,Brand A,AOV ▼ €1 last hour (day €2)
+16,16.00,Funnel flag,3,Brand A,comments ▼ 34.0/1k views (all brands 45.9)
+16,16.00,Funnel flag,3,Brand D,"views ▼ 2,371/h (avg 4,184/h)"
+16,16.00,Funnel flag,3,Brand E,conversion ▼ 1.08% (all brands 3.10%)
+16,16.00,Funnel flag,3,Brand E,"views ▼ 962/h (avg 2,584/h)"
+16,16.00,Funnel flag,3,Brand F,conversion ▼ 0.90% (all brands 3.10%)
+16,16.00,Paid media,4,Brand D,ROI ▼ 41.5 (3h ago 88.4) · spend €128
+16,16.00,Paid media,4,Brand C,paid boost switched off
+16,16.00,On track,6,Brand C,▲ pace 188.5% · 127.2% of target
+16,16.00,On track,6,Brand D,▲ pace 132.1% · 89.2% of target
+16,16.00,On track,6,Brand F,▲ pace 127.1% · 85.8% of target
+16,16.00,On track,6,Brand E,▲ pace 120.9% · 81.6% of target
+16,16.00,On track,6,Brand B,▲ pace 111.6% · 75.3% of target
+15,15.00,Behind,1,Brand A,▼ pace 17.3% · 11.1% of target · variance €1.7K · required €190/h vs €18/h current
+15,15.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 45.6)
+15,15.00,Funnel flag,3,Brand A,conversion ▼ 1.93% (all brands 3.03%)
+15,15.00,Funnel flag,3,Brand A,comments ▼ 34.6/1k views (all brands 45.6)
+15,15.00,Funnel flag,3,Brand D,"views ▼ 2,656/h (avg 4,293/h)"
+15,15.00,Funnel flag,3,Brand E,conversion ▼ 0.58% last hour (day 1.10%)
+15,15.00,Funnel flag,3,Brand E,conversion ▼ 1.06% (all brands 3.03%)
+15,15.00,Funnel flag,3,Brand F,conversion ▼ 0.71% last hour (day 1.00%)
+15,15.00,Funnel flag,3,Brand F,conversion ▼ 0.89% (all brands 3.03%)
+15,15.00,Paid media,4,Brand D,ROI ▼ 40.7 (3h ago 113.7) · spend €125
+15,15.00,Paid media,4,Brand C,paid boost switched off
+15,15.00,On track,6,Brand C,▲ pace 198.4% · 127.2% of target
+15,15.00,On track,6,Brand D,▲ pace 133.5% · 85.6% of target
+15,15.00,On track,6,Brand F,▲ pace 123.3% · 79.1% of target
+15,15.00,On track,6,Brand E,▲ pace 121.8% · 78.1% of target
+15,15.00,On track,6,Brand B,▲ pace 117.4% · 75.3% of target
+14,14.00,Behind,1,Brand A,▼ pace 16.0% · 9.89% of target · variance €1.7K · required €173/h vs €16/h current
+14,14.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 43.2)
+14,14.00,Funnel flag,3,Brand A,conversion ▼ 1.78% (all brands 3.03%)
+14,14.00,Funnel flag,3,Brand E,conversion ▼ 1.10% (all brands 3.03%)
+14,14.00,Funnel flag,3,Brand E,"views ▼ 1,599/h (avg 2,620/h)"
+14,14.00,Funnel flag,3,Brand F,conversion ▼ 1.00% (all brands 3.03%)
+14,14.00,Funnel flag,3,Brand F,comments ▼ 24.8/1k views (all brands 43.2)
+14,14.00,Paid media,4,Brand D,ROI ▼ 43.0 (3h ago 126.4) · spend €109
+14,14.00,Paid media,4,Brand C,paid boost switched off
+14,14.00,On track,6,Brand C,▲ pace 199.8% · 123.2% of target
+14,14.00,On track,6,Brand D,▲ pace 132.6% · 81.8% of target
+14,14.00,On track,6,Brand B,▲ pace 122.2% · 75.3% of target
+14,14.00,On track,6,Brand F,▲ pace 122.2% · 75.3% of target
+14,14.00,On track,6,Brand E,▲ pace 120.9% · 74.6% of target
+13,13.00,Behind,1,Brand A,▼ pace 15.7% · 9.08% of target · variance €1.7K · required €159/h vs €14/h current
+13,13.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 43.0)
+13,13.00,Funnel flag,3,Brand D,conversion ▼ 1.65% last hour (day 3.14%)
+13,13.00,Funnel flag,3,Brand E,conversion ▼ 1.06% (all brands 3.27%)
+13,13.00,Funnel flag,3,Brand F,conversion ▼ 0.72% last hour (day 1.03%)
+13,13.00,Funnel flag,3,Brand F,conversion ▼ 0.99% (all brands 3.27%)
+13,13.00,Funnel flag,3,Brand F,comments ▼ 24.2/1k views (all brands 43.0)
+13,13.00,Funnel flag,3,Brand C,conversion ▼ 1.81% last hour (day 8.10%)
+13,13.00,Paid media,4,Brand D,ROI ▼ 88.4 (3h ago 152.6) · spend €50
+13,13.00,Paid media,4,Brand C,paid boost switched off
+13,13.00,On track,6,Brand C,▲ pace 200.9% · 116.5% of target
+13,13.00,On track,6,Brand D,▲ pace 134.2% · 77.8% of target
+13,13.00,On track,6,Brand B,▲ pace 129.9% · 75.3% of target
+13,13.00,On track,6,Brand F,▲ pace 119.1% · 69.1% of target
+13,13.00,On track,6,Brand E,▲ pace 118.3% · 68.6% of target
+12,12.00,Behind,1,Brand A,▼ pace 15.3% · 8.24% of target · variance €1.8K · required €147/h vs €10/h current
+12,12.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 43.5)
+12,12.00,Funnel flag,3,Brand D,conversion ▼ 1.94% last hour (day 3.23%)
+12,12.00,Funnel flag,3,Brand E,conversion ▼ 0.96% (all brands 3.59%)
+12,12.00,Funnel flag,3,Brand F,conversion ▼ 1.03% (all brands 3.59%)
+12,12.00,Funnel flag,3,Brand F,"views ▼ 3,596/h (avg 4,657/h)"
+12,12.00,Funnel flag,3,Brand F,comments ▼ 26.6/1k views (all brands 43.5)
+12,12.00,Funnel flag,3,Brand C,conversion ▼ 4.61% last hour (day 8.41%)
+12,12.00,Paid media,4,Brand D,ROI ▼ 113.7 (3h ago 179.6) · spend €33
+12,12.00,Paid media,4,Brand C,paid boost switched off
+12,12.00,Data,5,Brand F,no data checkpoint for Channel B at 12.00
+12,12.00,On track,6,Brand C,▲ pace 202.8% · 109.0% of target
+12,12.00,On track,6,Brand B,▲ pace 140.1% · 75.3% of target
+12,12.00,On track,6,Brand D,▲ pace 132.6% · 71.3% of target
+12,12.00,On track,6,Brand F,▲ pace 112.4% · 60.5% of target
+12,12.00,On track,6,Brand E,▲ pace 106.1% · 57.0% of target
+11,11.00,Behind,1,Brand A,▼ pace 14.6% · 7.33% of target · variance €1.8K · required €137/h vs €10/h current
+11,11.00,At risk,2,Brand E,▼ pace 99.9% · 50.2% of target · variance €36.6K · required €2.8K/h vs €3.4K/h current
+11,11.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 43.3)
+11,11.00,Funnel flag,3,Brand D,"views ▼ 3,133/h (avg 4,218/h)"
+11,11.00,Funnel flag,3,Brand E,conversion ▼ 0.97% (all brands 3.67%)
+11,11.00,Funnel flag,3,Brand E,"views ▼ 1,279/h (avg 2,673/h)"
+11,11.00,Funnel flag,3,Brand F,conversion ▼ 0.68% last hour (day 1.07%)
+11,11.00,Funnel flag,3,Brand F,conversion ▼ 1.02% (all brands 3.67%)
+11,11.00,Funnel flag,3,Brand F,comments ▼ 26.2/1k views (all brands 43.3)
+11,11.00,Funnel flag,3,Brand C,conversion ▼ 6.30% last hour (day 8.66%)
+11,11.00,Paid media,4,Brand D,ROI ▼ 126.4 (3h ago 198.9) · spend €27
+11,11.00,Paid media,4,Brand C,paid boost switched off
+11,11.00,Data,5,Brand F,no data checkpoint for Channel B at 11.00
+11,11.00,On track,6,Brand C,▲ pace 205.7% · 103.2% of target
+11,11.00,On track,6,Brand B,▲ pace 150.1% · 75.3% of target
+11,11.00,On track,6,Brand D,▲ pace 132.4% · 66.4% of target
+11,11.00,On track,6,Brand F,▲ pace 111.5% · 55.9% of target
+10,10.00,Behind,1,Brand A,▼ pace 14.8% · 6.87% of target · variance €1.8K · required €128/h vs €12/h current
+10,10.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 42.7)
+10,10.00,Funnel flag,3,Brand A,views ▼ 250/h (avg 391/h)
+10,10.00,Funnel flag,3,Brand E,conversion ▼ 0.96% (all brands 3.71%)
+10,10.00,Funnel flag,3,Brand E,"views ▼ 1,819/h (avg 2,768/h)"
+10,10.00,Funnel flag,3,Brand F,conversion ▼ 0.80% last hour (day 1.09%)
+10,10.00,Funnel flag,3,Brand F,conversion ▼ 1.07% (all brands 3.71%)
+10,10.00,Funnel flag,3,Brand F,comments ▼ 25.8/1k views (all brands 42.7)
+10,10.00,Paid media,4,Brand D,ROI ▼ 152.6 (3h ago 216.9) · spend €20
+10,10.00,Paid media,4,Brand F,ROI ▼ 5.0 (3h ago 6.5) · spend €291
+10,10.00,Paid media,4,Brand C,paid boost switched off
+10,10.00,On track,6,Brand C,▲ pace 202.2% · 94.0% of target
+10,10.00,On track,6,Brand B,▲ pace 162.0% · 75.3% of target
+10,10.00,On track,6,Brand D,▲ pace 126.6% · 58.9% of target
+10,10.00,On track,6,Brand F,▲ pace 112.9% · 52.5% of target
+10,10.00,On track,6,Brand E,▲ pace 101.8% · 47.4% of target
+9,09.00,Behind,1,Brand A,▼ pace 15.9% · 6.72% of target · variance €1.8K · required €119/h vs €18/h current
+9,09.00,At risk,2,Brand E,▼ pace 96.4% · 40.6% of target · variance €43.6K · required €2.9K/h vs €2.6K/h current
+9,09.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 41.9)
+9,09.00,Funnel flag,3,Brand A,views ▼ 260/h (avg 408/h)
+9,09.00,Funnel flag,3,Brand D,"views ▼ 2,978/h (avg 4,468/h)"
+9,09.00,Funnel flag,3,Brand E,conversion ▼ 0.88% (all brands 3.65%)
+9,09.00,Funnel flag,3,Brand E,"views ▼ 1,819/h (avg 2,886/h)"
+9,09.00,Funnel flag,3,Brand F,conversion ▼ 1.09% (all brands 3.65%)
+9,09.00,Funnel flag,3,Brand F,comments ▼ 25.8/1k views (all brands 41.9)
+9,09.00,Paid media,4,Brand A,ROI ▼ 7.6 (3h ago 10.4) · spend €19
+9,09.00,Paid media,4,Brand D,ROI ▼ 179.6 (3h ago 248.3) · spend €16
+9,09.00,Paid media,4,Brand F,ROI ▼ 5.0 (3h ago 6.8) · spend €245
+9,09.00,Paid media,4,Brand C,paid boost switched off
+9,09.00,On track,6,Brand C,▲ pace 186.8% · 78.7% of target
+9,09.00,On track,6,Brand B,▲ pace 178.7% · 75.3% of target
+9,09.00,On track,6,Brand D,▲ pace 126.2% · 53.2% of target
+9,09.00,On track,6,Brand F,▲ pace 113.2% · 47.7% of target
+8,08.00,Behind,1,Brand A,▼ pace 15.2% · 5.76% of target · variance €1.8K · required €113/h vs €16/h current
+8,08.00,At risk,2,Brand E,▼ pace 95.7% · 36.3% of target · variance €46.7K · required €2.9K/h vs €2.2K/h current
+8,08.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 42.9)
+8,08.00,Funnel flag,3,Brand D,"views ▼ 2,036/h (avg 4,815/h)"
+8,08.00,Funnel flag,3,Brand E,conversion ▼ 0.84% (all brands 3.61%)
+8,08.00,Funnel flag,3,Brand E,"views ▼ 2,131/h (avg 2,994/h)"
+8,08.00,Funnel flag,3,Brand F,conversion ▼ 0.76% last hour (day 0.98%)
+8,08.00,Funnel flag,3,Brand F,conversion ▼ 0.95% (all brands 3.61%)
+8,08.00,Funnel flag,3,Brand C,conversion ▼ 6.00% last hour (day 8.80%)
+8,08.00,Paid media,4,Brand A,ROI ▼ 7.0 (3h ago 16.3) · spend €17
+8,08.00,Paid media,4,Brand D,ROI ▼ 198.9 (3h ago 261.7) · spend €13
+8,08.00,On track,6,Brand B,▲ pace 198.4% · 75.3% of target
+8,08.00,On track,6,Brand C,▲ pace 171.9% · 65.3% of target
+8,08.00,On track,6,Brand D,▲ pace 130.9% · 49.7% of target
+8,08.00,On track,6,Brand F,▲ pace 110.5% · 42.0% of target
+7,07.00,Behind,1,Brand A,▼ pace 14.3% · 4.94% of target · variance €1.8K · required €107/h vs €14/h current
+7,07.00,At risk,2,Brand E,▼ pace 96.2% · 33.1% of target · variance €49.1K · required €2.9K/h vs €2.0K/h current
+7,07.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 43.3)
+7,07.00,Funnel flag,3,Brand D,"views ▼ 3,066/h (avg 5,106/h)"
+7,07.00,Funnel flag,3,Brand E,conversion ▼ 0.44% last hour (day 0.93%)
+7,07.00,Funnel flag,3,Brand E,conversion ▼ 0.84% (all brands 3.68%)
+7,07.00,Funnel flag,3,Brand F,conversion ▼ 0.76% last hour (day 1.02%)
+7,07.00,Funnel flag,3,Brand F,conversion ▼ 0.98% (all brands 3.68%)
+7,07.00,Paid media,4,Brand A,ROI ▼ 7.8 (3h ago 15.5) · spend €13
+7,07.00,On track,6,Brand B,▲ pace 218.8% · 75.3% of target
+7,07.00,On track,6,Brand C,▲ pace 174.2% · 60.0% of target
+7,07.00,On track,6,Brand D,▲ pace 135.5% · 46.6% of target
+7,07.00,On track,6,Brand F,▲ pace 110.0% · 37.9% of target
+6,06.00,Behind,1,Brand A,▼ pace 12.6% · 3.84% of target · variance €1.8K · required €103/h vs €10/h current
+6,06.00,At risk,2,Brand E,▼ pace 98.5% · 30.1% of target · variance €51.3K · required €2.9K/h vs €1.6K/h current
+6,06.00,Funnel flag,3,Brand B,comments ▼ 32.7/1k views (all brands 44.3)
+6,06.00,Funnel flag,3,Brand D,"views ▼ 1,986/h (avg 5,730/h)"
+6,06.00,Funnel flag,3,Brand E,conversion ▼ 0.60% last hour (day 0.99%)
+6,06.00,Funnel flag,3,Brand E,conversion ▼ 0.93% (all brands 3.72%)
+6,06.00,Funnel flag,3,Brand F,conversion ▼ 0.68% last hour (day 1.10%)
+6,06.00,Funnel flag,3,Brand F,conversion ▼ 1.02% (all brands 3.72%)
+6,06.00,Paid media,4,Brand A,ROI ▼ 10.4 (3h ago 13.2) · spend €8
+6,06.00,On track,6,Brand B,▲ pace 247.0% · 75.3% of target
+6,06.00,On track,6,Brand C,▲ pace 196.6% · 60.0% of target
+6,06.00,On track,6,Brand D,▲ pace 141.2% · 43.1% of target
+6,06.00,On track,6,Brand F,▲ pace 107.0% · 32.6% of target
+5,05.00,Behind,1,Brand A,▼ pace 12.1% · 3.25% of target · variance €1.9K · required €98/h vs €11/h current
+5,05.00,Funnel flag,3,Brand B,conversion ▼ 2.27% last hour (day 5.14%)
+5,05.00,Funnel flag,3,Brand B,"views ▼ 614/h (avg 1,294/h)"
+5,05.00,Funnel flag,3,Brand B,comments ▼ 32.8/1k views (all brands 46.0)
+5,05.00,Funnel flag,3,Brand A,views ▼ 260/h (avg 438/h)
+5,05.00,Funnel flag,3,Brand D,"views ▼ 1,459/h (avg 6,798/h)"
+5,05.00,Funnel flag,3,Brand E,conversion ▼ 0.67% last hour (day 1.04%)
+5,05.00,Funnel flag,3,Brand E,conversion ▼ 0.99% (all brands 3.76%)
+5,05.00,Funnel flag,3,Brand E,"views ▼ 1,935/h (avg 3,116/h)"
+5,05.00,Funnel flag,3,Brand F,conversion ▼ 0.58% last hour (day 1.17%)
+5,05.00,Funnel flag,3,Brand F,conversion ▼ 1.10% (all brands 3.76%)
+5,05.00,Funnel flag,3,Brand F,"views ▼ 2,907/h (avg 4,812/h)"
+5,05.00,On track,6,Brand B,▲ pace 245.9% · 66.1% of target
+5,05.00,On track,6,Brand C,▲ pace 223.2% · 60.0% of target
+5,05.00,On track,6,Brand D,▲ pace 151.0% · 40.6% of target
+5,05.00,On track,6,Brand F,▲ pace 107.1% · 28.8% of target
+5,05.00,On track,6,Brand E,▲ pace 101.1% · 27.2% of target
+4,04.00,Behind,1,Brand A,▼ pace 11.4% · 2.82% of target · variance €1.9K · required €93/h vs €11/h current
+4,04.00,Funnel flag,3,Brand B,conversion ▼ 1.90% last hour (day 5.49%)
+4,04.00,Funnel flag,3,Brand B,"views ▼ 518/h (avg 1,553/h)"
+4,04.00,Funnel flag,3,Brand B,comments ▼ 35.0/1k views (all brands 47.7)
+4,04.00,Funnel flag,3,Brand A,views ▼ 300/h (avg 483/h)
+4,04.00,Funnel flag,3,Brand D,conversion ▼ 3.06% (all brands 3.84%)
+4,04.00,Funnel flag,3,Brand D,"views ▼ 1,120/h (avg 8,691/h)"
+4,04.00,Funnel flag,3,Brand E,conversion ▼ 0.61% last hour (day 1.09%)
+4,04.00,Funnel flag,3,Brand E,conversion ▼ 1.04% (all brands 3.84%)
+4,04.00,Funnel flag,3,Brand E,"views ▼ 1,304/h (avg 3,720/h)"
+4,04.00,Funnel flag,3,Brand F,conversion ▼ 0.83% last hour (day 1.27%)
+4,04.00,Funnel flag,3,Brand F,conversion ▼ 1.17% (all brands 3.84%)
+4,04.00,On track,6,Brand B,▲ pace 250.1% · 61.8% of target
+4,04.00,On track,6,Brand C,▲ pace 242.9% · 60.0% of target
+4,04.00,On track,6,Brand D,▲ pace 153.6% · 37.9% of target
+4,04.00,On track,6,Brand F,▲ pace 108.9% · 26.9% of target
+4,04.00,On track,6,Brand E,▲ pace 100.2% · 24.7% of target
+3,03.00,Behind,1,Brand A,▼ pace 9.98% · 2.28% of target · variance €1.9K · required €89/h vs €15/h current
+3,03.00,At risk,2,Brand F,▼ pace 98.4% · 22.5% of target · variance €7.9K · required €374/h vs €759/h current
+3,03.00,Funnel flag,3,Brand B,conversion ▼ 2.17% last hour (day 6.05%)
+3,03.00,Funnel flag,3,Brand B,"views ▼ 691/h (avg 1,984/h)"
+3,03.00,Funnel flag,3,Brand B,comments ▼ 32.0/1k views (all brands 47.9)
+3,03.00,Funnel flag,3,Brand A,views ▼ 370/h (avg 540/h)
+3,03.00,Funnel flag,3,Brand D,conversion ▼ 3.06% (all brands 3.94%)
+3,03.00,Funnel flag,3,Brand D,"views ▼ 1,773/h (avg 12,150/h)"
+3,03.00,Funnel flag,3,Brand E,conversion ▼ 1.09% (all brands 3.94%)
+3,03.00,Funnel flag,3,Brand F,conversion ▼ 1.27% (all brands 3.94%)
+3,03.00,Data,5,Brand F,"no data checkpoint for Channel A, Channel B at 03.00"
+3,03.00,On track,6,Brand C,▲ pace 262.6% · 60.0% of target
+3,03.00,On track,6,Brand B,▲ pace 256.4% · 58.5% of target
+3,03.00,On track,6,Brand D,▲ pace 159.7% · 36.4% of target
+3,03.00,On track,6,Brand E,▲ pace 102.1% · 23.3% of target
+2,02.00,Behind,1,Brand A,▼ pace 7.45% · 1.54% of target · variance €1.9K · required €86/h vs €15/h current
+2,02.00,At risk,2,Brand E,▼ pace 99.7% · 20.5% of target · variance €58.3K · required €2.7K/h vs €7.5K/h current
+2,02.00,Funnel flag,3,Brand B,conversion ▼ 2.37% last hour (day 7.50%)
+2,02.00,Funnel flag,3,Brand B,comments ▼ 34.3/1k views (all brands 45.8)
+2,02.00,Funnel flag,3,Brand D,conversion ▼ 2.99% (all brands 4.78%)
+2,02.00,Funnel flag,3,Brand F,conversion ▼ 1.27% (all brands 4.78%)
+2,02.00,On track,6,Brand C,▲ pace 290.9% · 60.0% of target
+2,02.00,On track,6,Brand B,▲ pace 256.3% · 52.8% of target
+2,02.00,On track,6,Brand D,▲ pace 164.8% · 34.0% of target
+2,02.00,On track,6,Brand F,▲ pace 109.0% · 22.5% of target
+1,01.00,Behind,1,Brand E,▼ pace 82.0% · 13.6% of target · variance €63.4K · required €2.8K/h vs €10.0K/h current
+1,01.00,Behind,1,Brand A,▼ pace 6.38% · 1.06% of target · variance €1.9K · required €83/h vs €20/h current
+1,01.00,At risk,2,Brand F,▼ pace 92.5% · 15.4% of target · variance €8.6K · required €373/h vs €1.6K/h current
+1,01.00,Funnel flag,3,Brand B,comments ▼ 39.8/1k views (all brands 49.9)
+1,01.00,Funnel flag,3,Brand D,conversion ▼ 2.78% (all brands 4.38%)
+1,01.00,Funnel flag,3,Brand D,comments ▼ 39.8/1k views (all brands 49.9)
+1,01.00,Funnel flag,3,Brand E,conversion ▼ 1.28% (all brands 4.38%)
+1,01.00,Funnel flag,3,Brand F,conversion ▼ 1.25% (all brands 4.38%)
+1,01.00,On track,6,Brand C,▲ pace 283.0% · 47.0% of target
+1,01.00,On track,6,Brand B,▲ pace 277.9% · 46.2% of target
+1,01.00,On track,6,Brand D,▲ pace 160.9% · 26.7% of target
