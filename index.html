@@ -1,0 +1,823 @@
+<title>Peak-Event Performance Tracker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Source+Serif+4:wght@400&display=swap">
+<style>
+/* Layout: one column dashboard. Header with date picker, controls, action points, KPI cards, two charts, brand table, history, data health. */
+:root{
+  --color-bg:#ffffff; --color-panel:#f4f6f9; --color-fg:#1b1f27; --color-fg-muted:#5a6473; --color-border-line:#dce1e8;
+  --color-ok:#1d7f48; --color-warn:#a96a0c; --color-bad:#c0352b;
+  --font-anthropic-sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-anthropic-serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --cds-gap-lg:20px; --cds-gap-md:12px; --cds-pad-lg:16px; --cds-radius:8px;
+  --cds-font-size-title:28px; --cds-font-size-heading:18px; --cds-font-size-caption:12px; --cds-font-weight-medium:500;
+  --cds-text-secondary:#5a6473; --cds-chart-axis:#9aa4b2; --cds-chart-grid:#e6eaf0; --cds-chart-reference:#6b7686; --cds-chart-muted:#b9c1cc;
+  --cds-surface-popover:#ffffff; --cds-border:#cfd6df; --cds-shadow-popover:0 4px 16px rgba(20,28,40,.14);
+  --color-accent-soft:#e9eef7;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --color-bg:#14171c; --color-panel:#1c2027; --color-fg:#e7eaf0; --color-fg-muted:#9aa4b3; --color-border-line:#2e343e;
+  --color-ok:#4cc38a; --color-warn:#e3ad3b; --color-bad:#f27368;
+  --cds-text-secondary:#9aa4b3; --cds-chart-axis:#5b6574; --cds-chart-grid:#272c35; --cds-chart-reference:#97a1b0; --cds-chart-muted:#444c59;
+  --cds-surface-popover:#222730; --cds-border:#3a414d; --cds-shadow-popover:0 4px 16px rgba(0,0,0,.5);
+  --color-accent-soft:#222a38; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --color-bg:#14171c; --color-panel:#1c2027; --color-fg:#e7eaf0; --color-fg-muted:#9aa4b3; --color-border-line:#2e343e;
+  --color-ok:#4cc38a; --color-warn:#e3ad3b; --color-bad:#f27368;
+  --cds-text-secondary:#9aa4b3; --cds-chart-axis:#5b6574; --cds-chart-grid:#272c35; --cds-chart-reference:#97a1b0; --cds-chart-muted:#444c59;
+  --cds-surface-popover:#222730; --cds-border:#3a414d; --cds-shadow-popover:0 4px 16px rgba(0,0,0,.5);
+  --color-accent-soft:#222a38; color-scheme:dark}
+body{background:var(--color-bg);color:var(--color-fg);font-family:var(--font-anthropic-sans);font-size:14px;line-height:1.4}
+.dash-select,.ddt-file select,.ddt-btn{font:inherit;padding:6px 8px;border:1px solid var(--color-border-line);border-radius:var(--cds-radius);background:var(--color-bg);color:var(--color-fg)}
+.ddt-btn{cursor:pointer}
+.ddt-btn:hover{background:var(--color-panel)}
+input[type=range]{accent-color:var(--color-fg-muted)}
+:focus-visible{outline:2px solid var(--color-fg-muted);outline-offset:2px}
+
+.ddt{font-family:var(--font-anthropic-sans);color:var(--color-fg);display:flex;flex-direction:column;gap:var(--cds-gap-lg);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1400px;margin:0 auto}
+.ddt>*{min-width:0}
+.ddt h1{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0;text-wrap:balance}
+.ddt-sub{color:var(--color-fg-muted);font-size:var(--cds-font-size-caption);margin:4px 0 0}
+.ddt-top{display:flex;flex-wrap:wrap;gap:var(--cds-gap-md);align-items:flex-end;justify-content:space-between}
+.ddt-controls{display:flex;flex-wrap:wrap;gap:var(--cds-gap-md);align-items:flex-end}
+.ddt-ctl{display:flex;flex-direction:column;gap:4px;font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.ddt-camp select{font-size:15px;font-weight:var(--cds-font-weight-medium)}
+.ddt-slider{flex:1;min-width:220px}
+.ddt-slider .row{display:flex;align-items:center;gap:8px}
+.ddt-slider input{flex:1}
+.ddt-slider b{color:var(--color-fg);font-variant-numeric:tabular-nums;min-width:44px}
+.ddt-seg{display:inline-flex;border:1px solid var(--color-border-line);border-radius:var(--cds-radius);overflow:hidden}
+.ddt-seg button{background:transparent;border:0;padding:6px 10px;color:var(--color-fg-muted);cursor:pointer;font:inherit;font-size:var(--cds-font-size-caption)}
+.ddt-seg button[aria-pressed="true"]{background:var(--color-panel);color:var(--color-fg);font-weight:var(--cds-font-weight-medium)}
+.ddt-actions{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);display:flex;flex-direction:column;gap:8px}
+.ddt-actions h2{margin:0}
+.ddt-gap{font-size:15px;line-height:1.5}
+.ddt-apgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--cds-gap-md);align-items:stretch}
+.ddt-box{background:var(--color-bg);border:1px solid var(--color-border-line);border-top:3px solid var(--color-border-line);border-radius:var(--cds-radius);padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ddt-box.ok{border-top-color:var(--color-ok)}.ddt-box.bad{border-top-color:var(--color-bad)}.ddt-box.warn{border-top-color:var(--color-warn)}
+.ddt-box h3{margin:0;font-size:13px;font-weight:var(--cds-font-weight-medium);display:flex;justify-content:space-between;gap:8px}
+.ddt-box h3 .n{color:var(--color-fg-muted);font-variant-numeric:tabular-nums}
+.ddt-box ul{margin:0;padding-left:16px;font-size:13px;line-height:1.45;display:flex;flex-direction:column;gap:4px}
+.ddt-box .empty{font-size:13px;color:var(--color-fg-muted)}
+.ddt-ap{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.ddt-ap li{display:flex;gap:8px;align-items:baseline;line-height:1.45}
+.ddt-tag{font-size:11px;font-weight:var(--cds-font-weight-medium);border-radius:999px;padding:1px 8px;white-space:nowrap;border:1px solid currentColor}
+.ddt-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--cds-gap-md)}
+.ddt-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg)}
+.ddt-card .lbl{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.ddt-card .val{font-family:var(--font-anthropic-serif);font-size:26px;font-variant-numeric:tabular-nums;margin-top:4px}
+.ddt-card .note{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin-top:4px}
+.ddt-ok{color:var(--color-ok)}.ddt-warn{color:var(--color-warn)}.ddt-bad{color:var(--color-bad)}.ddt-info{color:var(--color-fg-muted)}
+.ddt-h2{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0}
+.ddt-sec{display:flex;flex-direction:column;gap:8px}
+.ddt-rowhead{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.ddt-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:28px}
+.ddt-chip{border:1px solid var(--color-border-line);border-radius:999px;padding:4px 10px;background:transparent;color:var(--color-fg);cursor:pointer;font:inherit;font-size:var(--cds-font-size-caption);display:inline-flex;align-items:center;gap:6px}
+.ddt-chip .sw{width:10px;height:10px;border-radius:50%;display:inline-block}
+.ddt-chip[aria-pressed="false"]{opacity:.4}
+.ddt-chart{position:relative;min-height:300px}
+.ddt-chart.small{min-height:220px}
+.ddt-chart .tick text{fill:var(--cds-text-secondary);font-size:11px}
+.ddt-chart .domain{stroke:var(--cds-chart-axis)}
+.ddt-tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);box-shadow:var(--cds-shadow-popover);border-radius:var(--cds-radius);padding:6px 8px;font-size:12px;white-space:nowrap;z-index:2;font-variant-numeric:tabular-nums}
+.ddt-tip .h{color:var(--cds-text-secondary);margin-bottom:2px}
+.ddt-tablewrap{overflow-x:auto}
+.ddt-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px}
+.ddt-table th,.ddt-table td{padding:6px 8px;border-bottom:1px solid var(--color-border-line);text-align:right;white-space:nowrap}
+.ddt-table th:first-child,.ddt-table td:first-child{text-align:left;position:sticky;left:0;background:var(--color-bg)}
+.ddt-table th{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);font-weight:var(--cds-font-weight-medium);cursor:pointer;user-select:none}
+.ddt-table th[aria-sort="ascending"]::after{content:" ▲"}
+.ddt-table th[aria-sort="descending"]::after{content:" ▼"}
+.ddt-health{margin:0;padding-left:18px;font-size:var(--cds-font-size-caption)}
+.ddt-legend{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.ddt-hist{display:flex;flex-direction:column;gap:4px;max-height:420px;overflow-y:auto}
+.ddt-hist details{border-bottom:1px solid var(--color-border-line);padding:4px 0}
+.ddt-hist summary{cursor:pointer;font-size:13px}
+.ddt-hist ul{margin:6px 0 6px 18px;padding:0;font-size:13px}
+
+.ddt-brief{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--cds-gap-md)}
+.ddt-brief>div{border-left:3px solid var(--color-border-line);padding:2px 0 2px 12px;min-width:0}
+.ddt-brief h3{margin:0 0 4px;font-size:12px;font-weight:var(--cds-font-weight-medium);color:var(--color-fg-muted);letter-spacing:.04em;text-transform:uppercase}
+.ddt-brief p{margin:0;font-size:13px;line-height:1.5}
+
+/* data source panel (added for the standalone version) */
+.ddt-data{background:var(--color-accent-soft);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:10px 14px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.ddt-data .line{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.ddt-data .pill{font-size:11px;font-weight:var(--cds-font-weight-medium);border:1px solid currentColor;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.ddt-data summary{cursor:pointer;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.ddt-data .panel{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.ddt-src{width:100%;border-collapse:collapse;font-size:12px}
+.ddt-src th,.ddt-src td{text-align:left;padding:3px 8px 3px 0;border-bottom:1px solid var(--color-border-line);font-weight:400}
+.ddt-src th{color:var(--color-fg-muted)}
+.ddt-files{display:flex;flex-direction:column;gap:6px}
+.ddt-file{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12px}
+.ddt-msg{font-size:12px}
+.ddt-msg.err{color:var(--color-bad)}.ddt-msg.good{color:var(--color-ok)}
+.ddt-btnrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+</style>
+
+<div class="ddt">
+  <div class="ddt-top" id="header">
+    <div>
+      <h1>Peak-Event Intraday Performance Tracker</h1>
+      <p class="ddt-sub">Hourly performance against plan for six anonymised brands across two sales channels. Built to show where a revenue target is at risk while there is still time to act.</p>
+    </div>
+    <label class="ddt-ctl ddt-camp">Peak event
+      <select class="dash-select" data-draw="campaign" aria-label="Peak event" id="sel-campaign"></select>
+    </label>
+  </div>
+
+  <section class="ddt-brief" aria-label="Case brief">
+    <div><h3>Business question</h3><p>Which brands will miss their peak-day target, by how much, and what should account owners do in the next hours?</p></div>
+    <div><h3>Approach</h3><p>Hourly checkpoints per brand and channel are consolidated into cumulative performance, compared with an expected-share curve, and converted into pace, forecast at close and required run-rate. Rule-based flags separate funnel, engagement and paid-media issues.</p></div>
+    <div><h3>Decision support</h3><p>Every hour the view ranks brands by variance to target and lists the interventions the rules would trigger, so effort can be reallocated before the day closes.</p></div>
+  </section>
+
+  <div class="ddt-data" id="data-source">
+    <div class="line"><span class="pill" id="snap-pill">Data snapshot</span><span id="snap-text"></span></div>
+    <details>
+      <summary>Load your own CSV extracts</summary>
+      <div class="panel">
+        <div class="ddt-legend">The folder data/ contains the five input tables as CSV. Add edited or new files here to rerun the analysis in your browser. Each file replaces its table for this view only. Headers must match the data contract in docs/methodology.md.</div>
+        <div class="ddt-btnrow">
+          <input type="file" id="csv-files" accept=".csv,text/csv" multiple aria-label="CSV files">
+          <button type="button" class="ddt-btn" id="csv-apply">Apply files</button>
+          <button type="button" class="ddt-btn" id="csv-reset">Back to sample data</button>
+        </div>
+        <div class="ddt-files" id="csv-list"></div>
+        <div class="ddt-msg" id="csv-msg" role="status"></div>
+        <table class="ddt-src"><thead><tr><th>Tab</th><th>Source now</th><th>Rows</th></tr></thead><tbody id="src-body"></tbody></table>
+      </div>
+    </details>
+  </div>
+
+  <div class="ddt-controls" id="controls">
+    <label class="ddt-ctl">Channel
+      <select class="dash-select ddt-platform" id="sel-platform" aria-label="Channel">
+        <option value="All">All channels</option>
+        <option value="Channel A">Channel A</option>
+        <option value="Channel B">Channel B</option>
+      </select>
+    </label>
+    <div class="ddt-ctl ddt-slider">As of hour (replay the peak day)
+      <div class="row"><input type="range" class="ddt-asof" id="rng-asof" min="1" max="24" step="1" value="24" aria-label="As of hour"><b data-draw="asof_label">—</b></div>
+    </div>
+  </div>
+
+  <section class="ddt-actions" id="action-points">
+    <h2 class="ddt-h2">Interventions required at <span data-draw="ap_hour">—</span></h2>
+    <div class="ddt-gap" data-draw="ap_gap">—</div>
+    <div class="ddt-apgrid" data-draw="ap_list"></div>
+    <div class="ddt-legend" data-draw="ap_rules">—</div>
+  </section>
+
+  <div class="ddt-kpis" id="kpis">
+    <div class="ddt-card"><div class="lbl">Portfolio GMV to date</div><div class="val" data-draw="k_gmv">—</div><div class="note">Target <span data-draw="k_target">—</span></div></div>
+    <div class="ddt-card"><div class="lbl">Share of peak-day target</div><div class="val" data-draw="k_ach">—</div><div class="note">Plan curve by now <span data-draw="k_exp">—</span></div></div>
+    <div class="ddt-card"><div class="lbl">Pace vs. plan curve</div><div class="val" data-draw="k_pace">—</div><div class="note" data-draw="k_status">—</div></div>
+    <div class="ddt-card"><div class="lbl">Variance to target</div><div class="val" data-draw="k_gap">—</div><div class="note"><span data-draw="k_need">—</span> per hour required · current <span data-draw="k_rate">—</span></div></div>
+    <div class="ddt-card"><div class="lbl">Forecast at close · curve</div><div class="val" data-draw="k_curve">—</div><div class="note">Linear <span data-draw="k_lin">—</span></div></div>
+    <div class="ddt-card"><div class="lbl">Orders · conversion</div><div class="val" data-draw="k_orders">—</div><div class="note">Orders ÷ views <span data-draw="k_cr">—</span></div></div>
+  </div>
+
+  <section class="ddt-sec" id="trend-section">
+    <div class="ddt-rowhead">
+      <h2 class="ddt-h2">Cumulative GMV vs. plan curve</h2>
+      <div class="ddt-seg" role="group" aria-label="Chart scale">
+        <button type="button" class="ddt-view" data-view="pct" aria-pressed="true">% of own target</button>
+        <button type="button" class="ddt-view" data-view="rp" aria-pressed="false">GMV (€)</button>
+      </div>
+    </div>
+    <div class="ddt-chips" data-draw="chips" aria-label="Show or hide brands"></div>
+    <div class="ddt-chart" data-draw="trend"></div>
+    <div class="ddt-legend">Solid lines: actual. Dashed line: plan curve (reference peak day). Grey rule: selected hour.</div>
+  </section>
+
+  <section class="ddt-sec" id="metric-section">
+    <div class="ddt-rowhead">
+      <h2 class="ddt-h2">Driver analysis by hour</h2>
+      <label class="ddt-ctl">Metric
+        <select class="dash-select ddt-metric" id="sel-metric" aria-label="Metric">
+          <option value="hour_gmv">GMV generated per hour</option>
+          <option value="hour_orders">Orders per hour</option>
+          <option value="hour_views">Views per hour</option>
+          <option value="hour_comments">Comments per hour</option>
+          <option value="cr">Conversion (orders ÷ views), day so far</option>
+          <option value="cr_hour">Conversion (orders ÷ views), that hour</option>
+          <option value="aov">AOV, day so far</option>
+          <option value="cpk">Comments per 1,000 views</option>
+          <option value="likes">Likes (Channel A), cumulative</option>
+          <option value="ads">Paid media spend (Channel B), cumulative</option>
+          <option value="roi">Paid media ROI (Channel B)</option>
+        </select>
+      </label>
+    </div>
+    <div class="ddt-chart small" data-draw="metric"></div>
+    <div class="ddt-legend">Uses the brands switched on above. Orders and conversion cover channels that report orders (Channel A; Channel B only where attributed orders are reported).</div>
+  </section>
+
+  <section class="ddt-sec" id="brands-section">
+    <h2 class="ddt-h2">Brand scorecard at the selected hour</h2>
+    <div class="ddt-legend" data-draw="thresholds">—</div>
+    <div class="ddt-tablewrap">
+      <table class="ddt-table">
+        <thead><tr>
+          <th data-field="brand" data-sort="brand">Brand</th>
+          <th data-field="gmv" data-sort="gmv">GMV</th>
+          <th data-field="target" data-sort="target">Target</th>
+          <th data-field="achieved" data-sort="achieved">Achieved</th>
+          <th data-field="pace" data-sort="pace">Pace</th>
+          <th data-field="status" data-sort="pace">Status</th>
+          <th data-field="gap" data-sort="gap">Variance</th>
+          <th data-field="need_per_hour" data-sort="need_per_hour">Required / hr</th>
+          <th data-field="rate3" data-sort="rate3">Current / hr</th>
+          <th data-field="rr_curve" data-sort="rr_curve">Forecast · curve</th>
+          <th data-field="rr_linear" data-sort="rr_linear">Forecast · linear</th>
+          <th data-field="orders" data-sort="orders">Orders</th>
+          <th data-field="views" data-sort="views">Views</th>
+          <th data-field="cr" data-sort="cr">Conversion</th>
+          <th data-field="aov" data-sort="aov">AOV</th>
+          <th data-field="comments" data-sort="comments">Comments</th>
+          <th data-field="likes" data-sort="likes">Likes</th>
+          <th data-field="shares" data-sort="shares">Shares</th>
+          <th data-field="ads" data-sort="ads">Paid media</th>
+          <th data-field="roi" data-sort="roi">ROI</th>
+          <th data-field="prev_cr" data-sort="prev_cr">Conv. prior event</th>
+          <th data-field="last_slot" data-sort="hour_last">Last data</th>
+        </tr></thead>
+        <tbody data-draw="tbl"></tbody>
+      </table>
+    </div>
+    <div class="ddt-legend">Click a column header to sort; click again to reverse.</div>
+  </section>
+
+  <section class="ddt-sec" id="history-section">
+    <h2 class="ddt-h2">Intervention log</h2>
+    <div class="ddt-legend">Hour-by-hour record of the interventions the rules would have triggered. Newest first.</div>
+    <div class="ddt-hist" data-draw="history"></div>
+  </section>
+
+  <section class="ddt-sec" id="health-section">
+    <h2 class="ddt-h2">Data quality up to the selected hour</h2>
+    <ul class="ddt-health" data-draw="health"></ul>
+  </section>
+</div>
+
+<script type="application/json" id="snapshot-data">{"fetchedAt":"2026-11-25T15:52:25+01:00","tabs":{"chA":[["LivestreamID","Brand","Captured At","Slot","GMV","Orders","Livestream Start","Livestream Duration","New Session","Buyer","Quantity Sold","Average Order Value","Views","View Duration","Click Through Rate","Click Order Rate","Likes","Comment","Shares","Flags"],["SES-001","Brand D","2026-09-09 01:01:12","01.00","4,484.68","468","2026-09-09 00:00:06","1:01:06","Y","454","553","9.58","16834","0:01:00","79.6%","3.5%","15654","628","0",""],["SES-001","Brand D","2026-09-09 02:00:55","02.00","5,565.73","594","2026-09-09 00:00:06","2:00:48","N","574","715","9.37","19840","0:01:02","79.1%","3.8%","15979","835","0",""],["SES-001","Brand D","2026-09-09 03:00:25","03.00","5,940.32","639","2026-09-09 00:00:06","3:00:19","N","617","776","9.30","20853","0:01:05","79.8%","3.8%","15993","922","2",""],["SES-001","Brand D","2026-09-09 04:00:15","04.00","6,127.61","655","2026-09-09 00:00:06","4:00:09","N","633","795","9.36","21373","0:01:07","80.1%","3.8%","18351","983","6",""],["SES-001","Brand D","2026-09-09 05:01:33","05.00","6,522.61","683","2026-09-09 00:00:06","5:01:27","N","658","827","9.55","22072","0:01:09","80.2%","3.9%","25937","1031","6",""],["SES-001","Brand D","2026-09-09 06:02:39","06.00","6,878.58","717","2026-09-09 00:00:06","6:02:33","N","691","865","9.59","22958","0:01:10","80.8%","3.9%","34047","1102","8",""],["SES-001","Brand D","2026-09-09 07:04:33","07.00","7,434.52","766","2026-09-09 00:00:06","7:04:27","N","740","932","9.71","24824","0:01:09","78.8%","3.9%","34262","1166","8",""],["SES-001","Brand D","2026-09-09 08:00:36","08.00","7,861.60","811","2026-09-09 00:00:06","8:00:29","N","783","982","9.69","25910","0:01:10","78.9%","4.0%","34298","1231","8",""],["SES-001","Brand D","2026-09-09 09:01:24","09.00","8,331.40","859","2026-09-09 00:00:06","9:01:18","N","828","1034","9.70","27768","0:01:10","77.9%","4.0%","34391","1329","10",""],["SES-001","Brand D","2026-09-09 10:02:21","10.00","9,240.43","945","2026-09-09 00:00:06","10:02:15","N","908","1139","9.78","29948","0:01:10","77.0%","4.1%","35776","1476","12",""],["SES-001","Brand D","2026-09-09 11:01:56","11.00","10,475.81","1,031","2026-09-09 00:00:06","11:01:50","N","989","1247","10.16","31891","0:01:10","75.9%","4.3%","38967","1586","14",""],["SES-001","Brand D","2026-09-09 12:00:28","12.00","11,086.39","1,077","2026-09-09 00:00:06","12:00:21","N","1035","1301","10.29","34259","0:01:09","73.1%","4.3%","41710","1674","14",""],["SES-001","Brand D","2026-09-09 13:02:17","13.00","11,946.84","1,156","2026-09-09 00:00:06","13:02:10","N","1108","1393","10.33","39051","0:01:04","67.5%","4.4%","41921","1782","14",""],["SES-001","Brand D","2026-09-09 14:00:17","14.00","12,505.62","1,202","2026-09-09 00:00:06","14:00:10","N","1153","1447","10.40","40885","0:01:04","66.4%","4.4%","41983","1840","14",""],["SES-001","Brand D","2026-09-09 15:01:35","15.00","12,948.87","1,246","2026-09-09 00:00:06","15:01:29","N","1195","1497","10.39","42171","0:01:04","66.0%","4.5%","42128","1900","14",""],["SES-001","Brand D","2026-09-09 16:02:20","16.00","13,485.45","1,297","2026-09-09 00:00:06","16:02:13","N","1243","1555","10.40","43612","0:01:05","65.6%","4.5%","42167","1973","14",""],["SES-001","Brand D","2026-09-09 17:05:47","17.00","13,952.75","1,357","2026-09-09 00:00:06","17:05:41","N","1299","1628","10.28","45239","0:01:05","65.1%","4.6%","42196","2065","14",""],["SES-001","Brand D","2026-09-09 18:04:21","18.00","14,512.43","1,415","2026-09-09 00:00:06","18:04:15","N","1350","1695","10.26","47161","0:01:06","64.4%","4.7%","42281","2154","14",""],["SES-001","Brand D","2026-09-09 19:07:17","19.00","15,181.01","1,480","2026-09-09 00:00:06","19:07:11","N","1410","1773","10.26","49273","0:01:06","64.1%","4.7%","42378","2291","16",""],["SES-001","Brand D","2026-09-09 20:02:45","20.00","15,632.56","1,526","2026-09-09 00:00:06","20:02:39","N","1452","1829","10.24","51944","0:01:04","62.6%","4.7%","42419","2397","18","counter mid-animation: Views"],["SES-001","Brand D","2026-09-09 21:00:45","21.00","16,365.33","1,609","2026-09-09 00:00:06","21:00:39","N","1529","1928","10.17","56338","0:01:01","59.7%","4.8%","42430","2484","18",""],["SES-001","Brand D","2026-09-09 22:01:00","22.00","17,255.71","1,687","2026-09-09 00:00:06","22:00:54","N","1603","2032","10.23","60533","0:01:00","57.7%","4.8%","42547","2574","20",""],["SES-001","Brand D","2026-09-09 23:01:08","23.00","18,094.02","1,759","2026-09-09 00:00:06","23:01:02","N","1671","2126","10.29","63082","0:01:00","57.7%","4.8%","42625","2681","20",""],["SES-001","Brand D","2026-09-10 00:01:46","00.00","18,646.82","1,814","2026-09-09 00:00:06","23:59:46","N","1726","2197","10.28","65111","0:01:01","57.7%","4.8%","42925","2758","22","livestream ended"],["SES-002","Brand E","2026-09-09 01:02:41","01.00","10,004.72","73","2026-09-09 00:05:03","0:57:38","Y","64","75","137.05","5724","0:01:04","39.6%","3.2%","610","365","6",""],["SES-002","Brand E","2026-09-09 02:03:46","02.00","15,072.39","108","2026-09-09 00:05:03","1:58:42","N","93","112","139.56","","0:01:05","35.9%","3.1%","27213","577","6","counter mid-animation: Views; blank: Views"],["SES-002","Brand E","2026-09-09 03:03:20","03.00","17,107.45","122","2026-09-09 00:05:03","2:58:16","N","107","126","140.22","11161","0:01:07","34.6%","3.2%","55095","683","6",""],["SES-002","Brand E","2026-09-09 04:02:23","04.00","18,157.20","130","2026-09-09 00:05:03","3:57:19","N","114","134","139.67","12465","0:01:06","33.2%","3.1%","55124","729","6",""],["SES-002","Brand E","2026-09-09 05:01:05","05.00","19,939.08","143","2026-09-09 00:05:03","4:56:01","N","126","147","139.43","14400","0:01:02","31.3%","3.2%","55161","801","8",""],["SES-002","Brand E","2026-09-09 06:04:19","06.00","22,053.48","159","2026-09-09 00:05:03","5:59:15","N","142","163","138.70","17051","0:01:00","29.5%","3.2%","55223","873","8",""],["SES-002","Brand E","2026-09-09 07:00:28","07.00","24,306.85","176","2026-09-09 00:05:03","6:55:24","N","159","180","138.11","20959","0:00:54","27.0%","3.1%","55568","958","8",""],["SES-002","Brand E","2026-09-09 08:00:10","08.00","26,664.45","194","2026-09-09 00:05:03","7:55:07","N","177","198","137.45","23090","0:00:55","27.6%","3.1%","55740","1097","8",""],["SES-002","Brand E","2026-09-09 09:00:11","09.00","29,811.12","219","2026-09-09 00:05:03","8:55:07","N","201","224","136.12","24909","0:00:58","28.3%","3.1%","55779","1273","14",""],["SES-002","Brand E","2026-09-09 10:08:19","10.00","34,760.97","257","2026-09-09 00:05:03","10:00:00","N","233","264","135.26","26728","0:01:00","28.9%","3.3%","55857","1427","14","livestream ended"],["SES-003","Brand E","2026-09-09 11:00:40","11.00","2,041.96","15","2026-09-09 10:06:26","0:54:14","Y","13","15","136.13","1279","0:00:58","37.3%","3.1%","5691","106","4","session restart"],["SES-003","Brand E","2026-09-09 12:00:45","12.00","7,089.92","49","2026-09-09 10:06:26","1:54:19","N","39","49","144.69","","0:01:13","42.4%","4.2%","8265","","6","counter mid-animation: Views, Comment; blank: Views, Comment"],["SES-003","Brand E","2026-09-09 13:00:52","13.00","15,570.06","104","2026-09-09 10:06:26","2:54:26","N","88","109","149.71","7338","0:01:03","35.2%","4.0%","11821","689","6",""],["SES-003","Brand E","2026-09-09 14:00:12","14.00","19,953.28","135","2026-09-09 10:06:26","3:53:46","N","116","141","147.80","8937","0:01:09","36.8%","4.1%","13921","874","8",""],["SES-003","Brand E","2026-09-09 15:00:15","15.00","22,579.99","153","2026-09-09 10:06:26","4:53:49","N","133","159","147.58","12037","0:01:08","34.3%","3.7%","14337","1055","12",""],["SES-003","Brand E","2026-09-09 16:01:03","16.00","25,110.87","171","2026-09-09 10:06:26","5:54:37","N","150","177","146.85","12999","0:01:13","35.8%","3.7%","15860","1200","12",""],["SES-003","Brand E","2026-09-09 17:00:52","17.00","26,758.74","183","2026-09-09 10:06:26","6:54:26","N","159","189","146.22","14053","0:01:15","36.2%","3.6%","17896","1344","12",""],["SES-003","Brand E","2026-09-09 18:00:31","18.00","29,371.90","202","2026-09-09 10:06:26","7:54:05","N","175","210","145.41","15390","0:01:16","36.6%","3.6%","22467","1477","16",""],["SES-003","Brand E","2026-09-09 19:00:13","19.00","35,637.74","248","2026-09-09 10:06:26","8:53:47","N","215","256","143.70","17622","0:01:15","36.3%","3.9%","28394","1697","18",""],["SES-003","Brand E","2026-09-09 20:00:24","20.00","41,812.26","293","2026-09-09 10:06:26","9:53:58","N","257","301","142.70","19330","0:01:19","37.4%","4.1%","28608","1950","18",""],["SES-003","Brand E","2026-09-09 21:00:27","21.00","50,312.61","356","2026-09-09 10:06:26","10:54:01","N","316","364","141.33","21511","0:01:21","38.6%","4.3%","28827","2238","18","GMV differs from manual report"],["SES-003","Brand E","2026-09-09 22:00:30","22.00","55,046.18","392","2026-09-09 10:06:26","11:54:04","N","352","400","140.42","25096","0:01:18","36.8%","4.3%","29154","2459","22",""],["SES-003","Brand E","2026-09-09 23:00:19","23.00","60,667.33","432","2026-09-09 10:06:26","12:53:53","N","386","440","140.43","27979","0:01:19","36.5%","4.2%","29441","2760","22",""],["SES-003","Brand E","2026-09-10 00:00:00","00.00","65,173.68","464","2026-09-09 10:06:26","13:53:39","N","416","472","140.46","31108","0:01:19","35.5%","4.2%","29637","2949","22","livestream ended"],["SES-004","Brand B","2026-09-09 01:00:12","01.00","1,981.97","177","2026-09-09 00:02:27","0:57:44","Y","166","205","11.20","2360","0:01:37","86.5%","8.7%","445","84","0",""],["SES-004","Brand B","2026-09-09 02:00:39","02.00","2,226.49","199","2026-09-09 00:02:27","1:58:10","N","188","236","11.19","3288","0:01:32","75.3%","8.0%","471","100","4",""],["SES-004","Brand B","2026-09-09 03:00:00","03.00","2,450.08","211","2026-09-09 00:02:27","2:57:32","N","200","252","11.61","3841","0:01:39","72.6%","7.6%","1864","105","6",""],["SES-004","Brand B","2026-09-09 04:00:59","04.00","2,600.81","219","2026-09-09 00:02:27","3:58:31","N","208","266","11.88","4263","0:01:46","70.8%","7.3%","2001","122","6",""],["SES-004","Brand B","2026-09-09 05:01:09","05.00","2,802.89","231","2026-09-09 00:02:27","4:58:40","N","220","281","12.13","4791","0:01:46","68.3%","7.1%","18452","128","6",""],["SES-004","Brand B","2026-09-09 06:06:51","06.00","3,198.27","262","2026-09-09 00:02:27","5:57:37","N","251","324","12.21","5561","0:01:47","67.2%","7.0%","22094","148","6","livestream ended"],["SES-005","Brand B","2026-09-09 19:02:49","19.00","116.73","11","2026-09-09 18:01:02","1:01:47","Y","11","13","10.61","894","0:01:01","36.5%","3.4%","4402","36","0","session restart"],["SES-005","Brand B","2026-09-09 20:01:13","20.00","335.82","30","2026-09-09 18:01:02","2:00:10","N","30","34","11.19","1698","0:01:01","35.5%","5.0%","4842","62","0",""],["SES-005","Brand B","2026-09-09 21:00:43","21.00","786.12","65","2026-09-09 18:01:02","2:59:40","N","63","77","12.09","2509","0:01:05","36.5%","7.1%","9512","95","2",""],["SES-005","Brand B","2026-09-09 22:00:12","22.00","1,285.82","102","2026-09-09 18:01:02","3:59:09","N","99","123","12.61","3659","0:01:06","37.9%","7.4%","10321","145","2",""],["SES-005","Brand B","2026-09-09 23:00:08","23.00","1,580.46","125","2026-09-09 18:01:02","4:59:05","N","122","152","12.64","4121","0:01:09","38.9%","7.8%","10324","169","2",""],["SES-005","Brand B","2026-09-10 00:00:29","00.00","1,909.20","146","2026-09-09 18:01:02","5:59:26","N","143","179","13.08","4457","0:01:12","39.4%","8.3%","10340","185","2",""],["SES-006","Brand C","2026-09-09 01:01:11","01.00","2,029.34","204","2026-09-09 00:02:50","0:58:21","Y","201","253","9.95","2247","0:01:12","67.5%","13.5%","49","94","0",""],["SES-006","Brand C","2026-09-09 02:07:00","02.00","2,453.02","252","2026-09-09 00:02:50","2:00:02","N","247","317","9.73","2863","0:01:13","64.6%","13.6%","20618","118","0","livestream ended; GMV differs from manual report"],["SES-007","Brand C","2026-09-09 08:01:35","08.00","257.72","27","2026-09-09 07:00:41","1:00:54","Y","27","31","9.55","450","0:00:57","58.0%","10.3%","19576","6","0","session restart"],["SES-007","Brand C","2026-09-09 09:02:32","09.00","843.53","79","2026-09-09 07:00:41","2:01:51","N","79","111","10.68","1038","0:01:08","58.6%","13.0%","20264","36","0",""],["SES-007","Brand C","2026-09-09 10:01:37","10.00","1,427.03","127","2026-09-09 07:00:41","3:00:56","N","125","178","11.24","1514","0:01:14","61.1%","13.7%","20367","80","0",""],["SES-007","Brand C","2026-09-09 11:01:12","11.00","1,798.80","160","2026-09-09 07:00:41","4:00:31","N","158","220","11.24","2038","0:01:20","60.3%","13.0%","20825","113","0",""],["SES-007","Brand C","2026-09-09 12:01:10","12.00","1,977.16","180","2026-09-09 07:00:41","5:00:29","N","178","243","10.98","2472","0:01:22","59.0%","12.4%","20835","149","2",""],["SES-007","Brand C","2026-09-09 13:03:02","13.00","2,264.38","210","2026-09-09 07:00:41","6:02:21","N","207","278","10.78","4134","0:00:54","40.8%","12.4%","20955","170","2",""],["SES-007","Brand C","2026-09-09 14:01:12","14.00","2,588.59","242","2026-09-09 07:00:41","7:00:31","N","238","318","10.70","4547","0:00:58","41.9%","12.7%","21076","196","2",""],["SES-007","Brand C","2026-09-09 15:07:00","15.00","2,785.50","261","2026-09-09 07:00:41","8:00:19","N","257","341","10.67","4867","0:01:00","42.4%","12.6%","21103","218","2","livestream ended"],["SES-008","Brand C","2026-09-09 19:00:52","19.00","167.63","14","2026-09-09 18:00:16","1:00:36","Y","14","19","11.97","400","0:01:38","64.3%","5.5%","11838","33","2","session restart"],["SES-008","Brand C","2026-09-09 20:00:13","20.00","406.88","31","2026-09-09 18:00:16","1:59:57","N","31","46","13.13","815","0:01:30","59.8%","6.4%","11884","56","4",""],["SES-008","Brand C","2026-09-09 21:01:14","21.00","757.70","64","2026-09-09 18:00:16","3:00:58","N","64","83","11.84","1343","0:01:31","54.2%","8.8%","11925","99","6",""],["SES-008","Brand C","2026-09-09 22:01:17","22.00","978.70","90","2026-09-09 18:00:16","4:01:01","N","89","113","10.87","1890","0:01:29","56.0%","8.5%","12046","157","6",""],["SES-008","Brand C","2026-09-09 23:01:02","23.00","1,470.49","133","2026-09-09 18:00:16","5:00:46","N","130","181","11.06","2400","0:01:30","58.0%","9.6%","12603","213","6",""],["SES-008","Brand C","2026-09-10 00:01:00","00.00","1,947.34","172","2026-09-09 18:00:16","5:59:21","N","168","236","11.32","2908","0:01:31","56.5%","10.5%","12786","251","6","livestream ended"],["SES-009","Brand F","2026-09-09 01:04:01","01.00","1,387.86","114","2026-09-09 00:01:19","1:02:40","Y","107","128","12.17","8117","0:01:01","42.5%","3.3%","4412","377","4","GMV differs from manual report"],["SES-009","Brand F","2026-09-09 02:02:25","02.00","1,901.99","157","2026-09-09 00:01:19","2:01:05","N","146","172","12.11","10949","0:01:08","45.5%","3.2%","28569","537","4","GMV differs from manual report"],["SES-009","Brand F","2026-09-09 03:21:18","","2,126.16","173","2026-09-09 00:01:19","3:19:57","N","161","189","12.29","12513","0:01:15","46.6%","3.0%","52502","602","4","off-schedule capture"],["SES-009","Brand F","2026-09-09 04:03:46","04.00","2,278.97","184","2026-09-09 00:01:19","4:02:25","N","172","201","12.39","13237","0:01:17","46.8%","3.0%","54609","625","4","GMV differs from manual report"],["SES-009","Brand F","2026-09-09 05:00:38","05.00","2,388.36","193","2026-09-09 00:01:19","4:59:18","N","181","210","12.37","15174","0:01:14","45.5%","2.8%","54629","671","4",""],["SES-009","Brand F","2026-09-09 06:04:50","06.00","2,622.56","214","2026-09-09 00:01:19","6:03:30","N","201","232","12.25","18642","0:01:09","44.3%","2.6%","54656","751","4",""],["SES-009","Brand F","2026-09-09 07:04:41","07.00","3,016.36","243","2026-09-09 00:01:19","7:03:21","N","230","267","12.41","21805","0:01:07","43.4%","2.6%","54679","848","4",""],["SES-009","Brand F","2026-09-09 08:00:36","08.00","3,346.21","275","2026-09-09 00:01:19","7:59:16","N","262","300","12.17","25214","0:01:06","42.5%","2.6%","54798","985","4",""],["SES-009","Brand F","2026-09-09 09:03:17","09.00","3,822.31","313","2026-09-09 00:01:19","9:01:57","N","299","339","12.21","28619","0:01:06","42.4%","2.6%","54826","1097","6",""],["SES-009","Brand F","2026-09-09 10:02:41","10.00","4,119.39","337","2026-09-09 00:01:19","10:01:21","N","322","365","12.22","31610","0:01:07","42.1%","2.5%","54924","1219","10",""],["SES-009","Brand F","2026-09-09 11:00:51","11.00","4,465.42","364","2026-09-09 00:01:19","10:59:31","N","349","394","12.27","35573","0:01:05","40.5%","2.5%","54940","1341","10",""],["SES-009","Brand F","2026-09-09 12:02:03","12.00","4,922.97","404","2026-09-09 00:01:19","12:00:43","N","385","437","12.19","39169","0:01:05","39.8%","2.6%","54950","1456","10",""],["SES-009","Brand F","2026-09-09 13:01:11","13.00","5,405.83","443","2026-09-09 00:01:19","12:59:51","N","423","479","12.20","44618","0:01:02","37.9%","2.6%","54965","1602","12",""],["SES-009","Brand F","2026-09-09 14:04:20","14.00","5,808.72","480","2026-09-09 00:01:19","14:03:00","N","458","517","12.10","47953","0:01:03","37.6%","2.7%","54985","1771","14","GMV differs from manual report"],["SES-009","Brand F","2026-09-09 15:00:16","15.00","6,124.91","507","2026-09-09 00:01:19","14:58:56","N","482","546","12.08","50957","0:01:03","37.5%","2.7%","55240","1891","14",""],["SES-009","Brand F","2026-09-09 16:01:22","16.00","6,646.59","544","2026-09-09 00:01:19","16:00:02","N","516","592","12.22","54124","0:01:04","37.3%","2.7%","55282","1975","14",""],["SES-009","Brand F","2026-09-09 17:04:58","17.00","7,134.16","584","2026-09-09 00:01:19","17:03:38","N","555","634","12.22","57535","0:01:04","37.1%","2.7%","55323","2102","14",""],["SES-009","Brand F","2026-09-09 18:03:55","18.00","7,522.76","614","2026-09-09 00:01:19","18:02:35","N","582","666","12.25","61058","0:01:04","36.6%","2.7%","55396","2207","16",""],["SES-009","Brand F","2026-09-09 19:08:28","19.00","8,013.43","648","2026-09-09 00:01:19","19:07:08","N","614","705","12.37","64242","0:01:04","36.5%","2.8%","55433","2302","16",""],["SES-009","Brand F","2026-09-09 20:01:54","20.00","8,394.96","676","2026-09-09 00:01:19","20:00:34","N","641","733","12.42","67064","0:01:05","36.8%","2.7%","55463","2388","18",""],["SES-009","Brand F","2026-09-09 21:00:21","21.00","9,017.53","721","2026-09-09 00:01:19","20:59:01","N","682","781","12.51","72064","0:01:04","36.1%","2.8%","55491","2489","18",""],["SES-009","Brand F","2026-09-09 22:00:37","22.00","9,592.53","761","2026-09-09 00:01:19","21:59:17","N","720","823","12.61","77194","0:01:05","36.4%","2.7%","55527","2779","18",""],["SES-009","Brand F","2026-09-09 23:00:42","23.00","10,070.59","798","2026-09-09 00:01:19","22:59:22","N","755","866","12.62","81794","0:01:07","36.7%","2.7%","55676","2927","18",""],["SES-009","Brand F","2026-09-10 00:01:17","00.00","10,550.31","832","2026-09-09 00:01:19","23:59:35","N","788","901","12.68","86752","0:01:08","36.4%","2.6%","55792","3116","18","livestream ended"]],"chB":[["LivestreamID","Brand","Captured At","Slot","GMV","Attributed Items Sold","Livestream Start","Livestream End","Livestream Duration","New Session","GMV per Hour","Paid Boost ROI","Watch GPM","Ads Cost","Impressions","Views","Product Clicks","Current Viewers","Avg Viewing Duration","Avg Viewing Duration per View","CTR","Tap-through Rate","Tap-through Rate (LIVE Preview)","CTOR","CTOR (SKU Orders)","LIVE CTR","Comments","GMV Type","Flags","Attributed Orders","AOV"],["SES-010","Brand D","2026-09-09 01:01:28","01.00","876.04","121","2026-09-09 00:00:22","2026-09-09 01:01:27","1:01:06","Y","859.48","295.47","302.88","3.68","37340","2890","3000","80","0:00:51","0:00:40","8.80%","7.74%","3.30%","3.34%","4.04%","100.00%","157","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 02:01:17","02.00","1,245.45","168","2026-09-09 00:00:22","2026-09-09 02:01:16","2:00:52","N","617.68","255.36","279.05","6.01","66930","4460","4540","40","0:00:57","0:00:43","8.81%","6.67%","3.03%","3.09%","3.70%","100.00%","251","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 03:00:39","03.00","1,367.53","189","2026-09-09 00:00:22","2026-09-09 03:00:39","3:00:23","N","454.82","250.4","262.16","6.68","82780","5220","5270","31","0:00:57","0:00:43","8.73%","6.31%","3.01%","2.98%","3.59%","100.00%","295","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 04:00:00","04.00","1,475.79","201","2026-09-09 00:00:22","2026-09-09 04:00:00","3:59:43","N","369.41","261.31","253.23","6.96","95610","5820","5750","37","0:00:58","0:00:44","8.48%","6.09%","2.93%","2.94%","3.49%","98.76%","324","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 05:02:07","05.00","1,612.18","219","2026-09-09 00:00:22","2026-09-09 05:02:06","5:01:45","N","320.26","261.74","244.79","7.54","110470","6580","6610","52","0:01:03","0:00:48","8.37%","5.96%","2.89%","2.77%","3.31%","100.00%","363","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 06:02:58","06.00","1,757.97","240","2026-09-09 00:00:22","2026-09-09 06:02:56","6:02:32","N","290.96","248.26","228.90","8.65","134560","7680","7630","44","0:01:06","0:00:51","8.18%","5.71%","2.85%","2.62%","3.15%","99.34%","422","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 07:03:57","07.00","1,916.29","262","2026-09-09 00:00:22","2026-09-09 07:03:55","7:03:34","N","271.60","216.9","215.99","10.73","159350","8880","8710","21","0:01:05","0:00:50","8.22%","5.57%","2.83%","2.50%","3.01%","98.16%","468","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 08:00:47","08.00","2,101.29","291","2026-09-09 00:00:22","2026-09-09 08:00:47","8:00:27","N","262.66","198.89","214.00","12.78","179810","9830","9510","48","0:01:06","0:00:50","8.21%","5.46%","2.81%","2.56%","3.06%","96.73%","499","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 09:01:50","09.00","2,334.02","323","2026-09-09 00:00:22","2026-09-09 09:01:49","9:01:25","N","258.69","179.57","213.01","15.87","203860","10950","10560","33","0:01:07","0:00:50","8.16%","5.37%","2.84%","2.56%","3.06%","96.42%","575","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 10:01:59","10.00","2,563.54","358","2026-09-09 00:00:22","2026-09-09 10:01:57","10:01:36","N","255.71","152.55","209.53","20.44","229140","12230","11830","34","0:01:08","0:00:50","8.09%","5.34%","2.86%","2.53%","3.03%","96.75%","639","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 11:02:33","11.00","2,839.93","387","2026-09-09 00:00:22","2026-09-09 11:02:31","11:02:11","N","257.20","126.44","211.52","26.90","249600","13420","13130","56","0:01:08","0:00:49","7.91%","5.38%","2.92%","2.48%","2.95%","97.85%","710","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 12:00:46","12.00","3,209.49","430","2026-09-09 00:00:22","2026-09-09 12:00:46","12:00:23","N","267.13","113.7","216.48","33.34","277940","14810","14400","60","0:01:10","0:00:50","7.83%","5.33%","2.92%","2.53%","2.99%","97.20%","803","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 13:02:34","13.00","3,658.21","496","2026-09-09 00:00:22","2026-09-09 13:02:34","13:02:14","N","280.54","88.39","218.97","50.15","319510","16710","16250","77","0:01:11","0:00:49","7.84%","5.23%","2.87%","2.59%","3.05%","97.25%","915","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 14:00:44","14.00","3,888.51","526","2026-09-09 00:00:22","2026-09-09 14:00:44","14:00:24","N","277.56","43.03","202.58","109.24","379710","19220","17850","81","0:01:08","0:00:46","7.78%","5.06%","2.82%","2.51%","2.95%","92.88%","985","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 15:04:36","15.00","4,215.55","570","2026-09-09 00:00:22","2026-09-09 15:04:35","15:04:18","N","279.54","40.68","204.57","125.12","419320","20590","19020","34","0:01:08","0:00:46","7.73%","4.91%","2.80%","2.51%","3.00%","92.34%","1060","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 16:01:57","16.00","4,396.27","593","2026-09-09 00:00:22","2026-09-09 16:01:57","16:01:37","N","274.08","41.47","204.07","128.10","442360","21520","19900","39","0:01:08","0:00:45","7.75%","4.86%","2.79%","2.51%","2.98%","92.48%","1100","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 17:05:20","17.00","4,545.49","614","2026-09-09 00:00:22","2026-09-09 17:05:20","17:05:04","N","266.14","42.14","200.10","130.59","473920","22730","21110","51","0:01:08","0:00:45","7.78%","4.80%","2.78%","2.44%","2.91%","92.90%","1180","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 18:03:16","18.00","4,866.73","653","2026-09-09 00:00:22","2026-09-09 18:03:15","18:02:56","N","269.61","44.2","203.08","133.07","507490","23980","22410","56","0:01:08","0:00:45","7.82%","4.73%","2.75%","2.46%","2.91%","93.45%","1270","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 19:05:33","19.00","5,222.87","703","2026-09-09 00:00:22","2026-09-09 19:05:31","19:05:09","N","273.58","37.89","197.12","167.33","556740","26480","24190","85","0:01:07","0:00:44","7.79%","4.76%","2.71%","2.45%","2.90%","91.34%","1350","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 20:02:11","20.00","5,685.28","779","2026-09-09 00:00:22","2026-09-09 20:02:08","20:01:49","N","284.01","31.05","197.62","220.95","618710","28770","25880","72","0:01:07","0:00:43","7.79%","4.65%","2.70%","2.50%","3.01%","89.93%","1460","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 21:00:27","21.00","6,115.36","842","2026-09-09 00:00:22","2026-09-09 21:00:25","21:00:07","N","290.96","27.79","197.12","266.63","669360","30990","27180","58","0:01:06","0:00:42","7.73%","4.63%","2.70%","2.54%","3.08%","87.71%","1550","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 22:00:46","22.00","6,507.93","892","2026-09-09 00:00:22","2026-09-09 22:00:45","22:00:25","N","295.93","28.44","198.61","277.06","708090","32740","28680","38","0:01:08","0:00:43","7.71%","4.62%","2.70%","2.54%","3.09%","87.57%","1650","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 23:00:51","23.00","6,872.68","940","2026-09-09 00:00:22","2026-09-09 23:00:48","23:00:30","N","298.91","29.52","200.60","281.03","745590","34270","30210","55","0:01:08","0:00:43","7.71%","4.60%","2.67%","2.54%","3.09%","88.15%","1790","Attributed GMV; Paid boost active","","",""],["SES-010","Brand D","2026-09-09 23:58:18","23.59","7,274.10","982","2026-09-09 00:00:22","2026-09-09 23:58:19","23:57:57","N","303.38","31.07","203.08","283.02","784300","35830","31820","","0:01:09","0:00:43","7.71%","4.57%","2.66%","2.52%","3.06%","88.80%","1860","Attributed GMV; Paid boost active","livestream ended; blank: Current Viewers; GMV differs from manual report","",""],["SES-011","Brand B","2026-09-09 01:00:27","01.00","176.89","21","2026-09-09 00:03:32","2026-09-09 01:00:25","0:56:49","Y","186.69","28.67","388.78","7.30","11180","455","369","13","0:00:59","0:00:46","5.53%","4.07%","4.57%","5.42%","5.69%","81.10%","28","Attributed GMV; Paid boost active","","",""],["SES-011","Brand B","2026-09-09 02:00:23","02.00","242.40","30","2026-09-09 00:03:32","2026-09-09 02:00:22","1:56:49","N","124.63","32.2","356.50","9.42","20010","680","487","10","0:00:53","0:00:40","5.24%","3.40%","4.35%","5.54%","5.75%","71.62%","36","Attributed GMV; Paid boost active","","",""],["SES-011","Brand B","2026-09-09 03:00:15","03.00","285.61","35","2026-09-09 00:03:32","2026-09-09 03:00:14","2:56:39","N","96.82","34.82","349.06","10.03","25940","818","580","6","0:01:01","0:00:45","5.36%","3.15%","3.96%","5.34%","5.69%","70.90%","44","Attributed GMV; Paid boost active","","",""],["SES-011","Brand B","2026-09-09 04:01:16","04.00","285.61","35","2026-09-09 00:03:32","2026-09-09 04:01:15","3:57:40","N","72.00","33.09","312.31","10.86","30150","914","675","6","0:01:01","0:00:46","5.49%","3.03%","3.87%","4.59%","4.89%","73.85%","59","Attributed GMV; Paid boost active","","",""],["SES-011","Brand B","2026-09-09 05:00:49","05.00","285.61","35","2026-09-09 00:03:32","2026-09-09 05:00:48","4:57:12","N","57.60","30.52","284.51","11.78","34480","1000","713","5","0:00:58","0:00:44","5.37%","2.91%","3.55%","4.35%","4.63%","71.09%","62","Attributed GMV; Paid boost active","","",""],["SES-011","Brand B","2026-09-09 06:01:50","06.00","322.62","39","2026-09-09 00:03:32","2026-09-09 06:00:49","5:57:17","N","54.12","31.93","271.60","12.60","42600","1190","872","","0:00:58","0:00:44","5.44%","2.79%","3.73%","3.90%","4.24%","73.40%","73","Attributed GMV; Paid boost active","livestream ended; blank: Current Viewers","",""],["SES-012","Brand B","2026-09-09 19:03:12","19.00","36.44","7","2026-09-09 18:01:38","2026-09-09 19:03:09","1:01:27","Y","35.54","3.94","65.54","11.62","20860","558","169","9","0:00:22","0:00:19","4.58%","2.68%","1.56%","3.55%","4.14%","30.29%","25","Attributed GMV; Paid boost active","session restart","",""],["SES-012","Brand B","2026-09-09 20:02:07","20.00","78.68","16","2026-09-09 18:01:38","2026-09-09 20:02:06","2:00:23","N","39.19","3.9","67.03","24.86","46250","1180","380","11","0:00:28","0:00:23","5.05%","2.54%","","3.95%","4.21%","32.31%","38","Attributed GMV; Paid boost active","blank: Tap-through Rate (LIVE Preview) (dashboard shows --)","",""],["SES-012","Brand B","2026-09-09 21:01:08","21.00","174.81","27","2026-09-09 18:01:38","2026-09-09 21:01:07","2:59:23","N","58.59","5.68","109.24","37.40","67720","1600","553","9","0:00:35","0:00:28","5.05%","2.36%","","4.52%","4.88%","34.58%","52","Attributed GMV; Paid boost active","blank: Tap-through Rate (LIVE Preview) (dashboard shows --)","",""],["SES-012","Brand B","2026-09-09 22:01:16","22.00","282.35","43","2026-09-09 18:01:38","2026-09-09 22:01:15","3:59:33","N","70.51","6.61","136.05","51.64","88300","2080","792","11","0:00:43","0:00:34","5.25%","2.35%","1.54%","4.67%","5.43%","38.13%","68","Attributed GMV; Paid boost active","","",""],["SES-012","Brand B","2026-09-09 23:01:45","23.00","350.40","51","2026-09-09 18:01:38","2026-09-09 23:01:42","5:00:04","N","70.01","6.77","140.02","62.56","108250","2500","1020","10","0:00:51","0:00:40","5.31%","2.31%","1.49%","4.31%","5.00%","40.84%","81","Attributed GMV; Paid boost active","","",""],["SES-012","Brand B","2026-09-10 00:02:07","00.00","419.27","60","2026-09-09 18:01:38","2026-09-10 00:01:27","5:59:49","N","70.01","6.84","144.99","73.49","129450","2890","1230","","0:00:54","0:00:42","5.21%","2.23%","1.49%","4.00%","4.90%","42.34%","109","Attributed GMV; Paid boost active","livestream ended; blank: Current Viewers","",""],["SES-013","Brand A","2026-09-09 01:02:00","01.00","20.36","17","2026-09-09 00:00:30","2026-09-09 01:02:00","1:01:26","Y","19.87","7.88","","2.39","46770","692","338","10","","0:00:26","4.68%","1.48%","5.60%","4.73%","","48.84%","33","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 02:00:00","02.00","29.47","26","2026-09-09 00:00:30","2026-09-09 02:00:00","1:59:26","N","14.80","9.94","","3.22","82060","1080","474","8","","0:00:23","4.28%","1.31%","4.97%","4.64%","","43.97%","49","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 03:00:57","03.00","43.76","37","2026-09-09 00:00:30","2026-09-09 03:00:57","3:00:23","N","14.55","13.23","","3.57","107320","1450","558","12","","0:00:24","4.22%","1.35%","4.54%","5.02%","","38.51%","62","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 04:00:43","04.00","54.11","43","2026-09-09 00:00:30","2026-09-09 04:00:43","4:00:13","N","13.52","15.49","","3.78","127560","1750","625","12","","0:00:32","4.16%","1.37%","4.12%","5.12%","","35.67%","75","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 05:00:17","05.00","62.34","46","2026-09-09 00:00:30","2026-09-09 05:00:17","4:59:43","N","12.48","16.26","","4.13","154090","2010","759","10","","0:00:35","4.44%","1.30%","3.98%","4.48%","","37.84%","80","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 06:02:23","06.00","73.63","55","2026-09-09 00:00:30","2026-09-09 06:02:23","6:01:53","N","12.21","10.41","","7.65","200290","2380","847","6","","0:00:36","4.27%","1.19%","3.49%","4.84%","","35.65%","86","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 07:02:01","07.00","94.76","70","2026-09-09 00:00:30","2026-09-09 07:02:01","7:01:28","N","13.49","7.83","","13.07","250300","2790","1030","7","","0:00:34","4.24%","1.12%","3.40%","5.06%","","36.76%","104","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 08:04:10","08.00","110.57","84","2026-09-09 00:00:30","2026-09-09 08:04:10","8:03:37","N","13.72","6.97","","17.36","304970","3260","1230","8","","0:00:40","4.33%","1.07%","3.24%","5.02%","","37.86%","120","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 09:00:37","09.00","129.03","96","2026-09-09 00:00:30","2026-09-09 09:00:37","9:00:07","N","14.33","7.59","","18.59","359190","3520","1310","11","","0:00:45","4.36%","0.98%","3.24%","5.27%","","37.24%","133","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 10:02:43","10.00","131.96","98","2026-09-09 00:00:30","2026-09-09 10:02:43","10:02:13","N","13.15","7.53","","19.12","430690","3770","1330","6","","0:00:43","4.31%","0.88%","3.22%","5.26%","","35.28%","137","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 11:00:44","11.00","140.79","107","2026-09-09 00:00:30","2026-09-09 11:00:44","11:00:11","N","12.79","7.78","","19.76","502450","4090","1500","9","","0:00:41","4.46%","0.81%","3.24%","4.99%","","36.76%","146","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 12:01:22","12.00","158.13","122","2026-09-09 00:00:30","2026-09-09 12:01:22","12:00:48","N","13.16","7.9","","21.72","587280","4450","1600","8","","0:00:45","4.48%","0.76%","3.26%","5.31%","","35.95%","163","Attributed GMV; Paid boost active","","",""],["SES-013","Brand A","2026-09-09 12:25:00","","158.78","123","2026-09-09 00:00:30","2026-09-09 12:10:05","12:09:35","N","13.06","7.81","","22.05","603260","4510","1610","","","0:00:49","4.44%","0.75%","3.25%","5.34%","","35.68%","164","Attributed GMV; Paid boost active","off-schedule capture; livestream ended; blank: Current Viewers","",""],["SES-014","Brand A","2026-09-09 13:04:00","13.00","15.50","11","2026-09-09 12:11:28","2026-09-09 13:04:00","0:52:25","Y","17.70","7.36","","2.12","80840","606","159","12","","0:00:19","4.48%","0.75%","2.73%","5.66%","","26.24%","19","Attributed GMV; Paid boost active","session restart","",""],["SES-014","Brand A","2026-09-09 14:00:23","14.00","31.14","25","2026-09-09 12:11:28","2026-09-09 14:00:23","1:48:55","N","17.15","7.74","","4.19","171790","1070","257","9","","0:00:20","3.83%","0.63%","2.91%","7.39%","","23.93%","32","Attributed GMV; Paid boost active","GMV differs from manual report","19","1.64"],["SES-014","Brand A","2026-09-09 15:01:50","15.00","54.76","44","2026-09-09 12:11:28","2026-09-09 15:01:50","2:50:19","N","19.28","8.63","","6.38","269510","1610","443","7","","0:00:21","4.31%","0.60%","2.88%","7.00%","","27.60%","48","Attributed GMV; Paid boost active","","31","1.77"],["SES-014","Brand A","2026-09-09 16:03:16","16.00","75.93","64","2026-09-09 12:11:28","2026-09-09 16:03:16","3:51:49","N","19.65","8.45","","9.62","363520","2050","610","11","","0:00:20","4.48%","0.56%","2.84%","7.70%","","29.74%","59","Attributed GMV; Paid boost active","","47","1.62"],["SES-014","Brand A","2026-09-09 17:02:49","17.00","84.77","69","2026-09-09 12:11:28","2026-09-09 17:02:49","4:51:18","N","17.46","8.29","","10.93","449200","2380","748","10","","0:00:22","4.82%","0.53%","2.97%","6.82%","","31.44%","62","Attributed GMV; Paid boost active","","51","1.66"],["SES-014","Brand A","2026-09-09 18:02:55","18.00","107.91","83","2026-09-09 12:11:28","2026-09-09 18:02:55","5:51:24","N","18.42","8.9","","12.74","534690","2770","853","7","","0:00:21","4.80%","0.52%","2.97%","7.15%","","30.75%","69","Attributed GMV; Paid boost active","","61","1.77"],["SES-014","Brand A","2026-09-09 19:01:07","19.00","132.73","104","2026-09-09 12:11:28","2026-09-09 19:01:07","6:49:40","N","19.44","9.03","","15.93","632640","3230","1010","6","","0:00:28","4.83%","0.51%","3.00%","7.54%","","31.17%","87","Attributed GMV; Paid boost active","","76","1.75"],["SES-014","Brand A","2026-09-09 20:00:36","20.00","150.89","116","2026-09-09 12:11:28","2026-09-09 20:00:36","7:49:06","N","19.30","8.41","","19.26","725760","3660","1150","9","","0:00:27","4.90%","0.50%","3.00%","7.32%","","31.38%","95","Attributed GMV; Paid boost active","","84","1.80"],["SES-014","Brand A","2026-09-09 21:01:32","21.00","155.65","120","2026-09-09 12:11:28","2026-09-09 21:01:32","8:50:01","N","17.62","7.83","","21.35","817290","4100","1290","11","","0:00:29","4.89%","0.50%","2.98%","6.74%","","31.46%","106","Attributed GMV; Paid boost active","","87","1.79"],["SES-014","Brand A","2026-09-09 22:00:39","22.00","167.95","129","2026-09-09 12:11:28","2026-09-09 22:00:39","9:49:07","N","17.10","8.04","","22.50","898700","4480","1400","9","","0:00:29","4.86%","0.50%","3.00%","6.57%","","31.31%","125","Attributed GMV; Paid boost active","","92","1.83"],["SES-014","Brand A","2026-09-09 23:00:58","23.00","184.08","138","2026-09-09 12:11:28","2026-09-09 23:00:58","10:49:24","N","17.00","8.45","","23.45","971790","4790","1490","11","","0:00:32","4.93%","0.49%","2.95%","6.64%","","31.12%","129","Attributed GMV; Paid boost active","","99","1.86"],["SES-014","Brand A","2026-09-10 00:03:00","00.00","199.20","147","2026-09-09 12:11:28","2026-09-10 00:00:11","11:48:43","N","16.86","8.3","","25.87","1030000","5080","1620","","","0:00:34","4.94%","0.49%","2.93%","6.68%","","31.83%","171","Attributed GMV; Paid boost active","livestream ended; blank: Current Viewers; GMV differs from manual report","108","1.84"],["SES-015","Brand C","2026-09-09 01:02:12","01.00","256.62","53","2026-09-09 00:07:30","2026-09-09 01:02:09","0:54:33","Y","282.03","30.64","","9.93","10030","887","635","16","0:00:42","0:00:33","4.96%","8.85%","2.93%","5.51%","7.40%","71.59%","98","Attributed GMV; Paid boost active","GMV differs from manual report","",""],["SES-015","Brand C","2026-09-09 02:08:24","02.00","461.50","92","2026-09-09 00:07:30","2026-09-09 02:07:35","2:00:05","N","230.39","45.31","","9.93","17380","1300","902","","0:00:43","0:00:34","5.03%","7.47%","2.99%","5.88%","7.87%","69.49%","115","Attributed GMV; Paid boost active","livestream ended; blank: Current Viewers","",""],["SES-016","Brand C","2026-09-09 09:00:48","09.00","69.56","9","2026-09-09 07:59:34","2026-09-09 09:00:47","1:01:06","Y","68.02","","","","7600","394","318","13","0:00:40","0:00:35","6.92%","5.18%","2.69%","2.83%","2.83%","80.71%","38","Attributed GMV","session restart","",""],["SES-016","Brand C","2026-09-09 10:01:01","10.00","229.01","41","2026-09-09 07:59:34","2026-09-09 10:01:00","2:01:25","N","113.21","","","","14370","706","579","7","0:00:53","0:00:45","6.82%","4.91%","2.56%","4.84%","6.39%","82.01%","57","Attributed GMV","","",""],["SES-016","Brand C","2026-09-09 11:01:39","11.00","302.78","54","2026-09-09 07:59:34","2026-09-09 11:01:38","3:01:59","N","99.80","","","","21130","1050","924","6","0:00:50","0:00:41","6.61%","4.97%","2.58%","4.44%","5.41%","88.08%","89","Attributed GMV","","",""],["SES-016","Brand C","2026-09-09 12:01:43","12.00","408.01","70","2026-09-09 07:59:34","2026-09-09 12:01:42","4:02:04","N","101.29","","","","28470","1400","1140","12","0:00:57","0:00:46","6.40%","4.92%","2.56%","4.37%","5.59%","81.71%","110","Attributed GMV","","",""],["SES-016","Brand C","2026-09-09 13:05:23","13.00","483.85","111","2026-09-09 07:59:34","2026-09-09 12:59:37","5:00:03","N","96.82","","","","36310","1760","1400","","0:01:11","0:00:56","6.34%","4.85%","2.44%","5.48%","7.48%","79.73%","147","Attributed GMV","livestream ended; blank: Current Viewers","",""],["SES-017","Brand C","2026-09-09 18:00:14","18.00","44.61","7","2026-09-09 17:00:19","2026-09-09 18:00:14","0:59:48","Y","44.71","","","","10460","502","232","12","0:00:30","0:00:25","5.32%","4.80%","2.53%","3.02%","3.02%","46.22%","48","Attributed GMV","session restart","",""],["SES-017","Brand C","2026-09-09 19:00:20","19.00","177.90","34","2026-09-09 17:00:19","2026-09-09 19:00:18","1:59:55","N","88.88","","","","21540","916","481","6","0:00:38","0:00:31","5.25%","4.25%","2.22%","6.24%","6.65%","52.51%","86","Attributed GMV","","",""],["SES-017","Brand C","2026-09-09 20:00:00","20.00","247.48","46","2026-09-09 17:00:19","2026-09-09 19:59:59","2:59:36","N","82.42","","","","32200","1320","738","7","0:00:44","0:00:35","5.34%","4.11%","2.21%","5.69%","5.96%","55.82%","132","Attributed GMV","","",""],["SES-017","Brand C","2026-09-09 21:00:40","21.00","369.51","77","2026-09-09 17:00:19","2026-09-09 21:00:38","4:00:15","N","92.35","","","","41200","1680","955","9","0:00:45","0:00:35","5.30%","4.08%","","6.81%","7.85%","56.78%","169","Attributed GMV","blank: Tap-through Rate (LIVE Preview) (dashboard shows --)","",""],["SES-017","Brand C","2026-09-09 22:01:03","22.00","527.66","117","2026-09-09 17:00:19","2026-09-09 22:01:01","5:00:34","N","105.26","","","","50400","2100","1270","10","0:00:46","0:00:35","5.44%","4.16%","","6.86%","9.06%","60.54%","197","Attributed GMV","blank: Tap-through Rate (LIVE Preview) (dashboard shows --)","",""],["SES-017","Brand C","2026-09-09 23:00:48","23.00","668.64","163","2026-09-09 17:00:19","2026-09-09 23:00:47","6:00:23","N","111.22","","","","58740","2500","1510","6","0:00:47","0:00:36","5.42%","4.26%","2.16%","7.69%","10.47%","60.34%","242","Attributed GMV","","",""],["SES-017","Brand C","2026-09-10 00:02:47","00.00","773.66","191","2026-09-09 17:00:19","2026-09-10 00:00:05","6:59:46","N","110.72","","","","65150","2790","1700","","0:01:05","0:00:50","5.47%","4.29%","2.10%","8.11%","10.93%","60.90%","249","Attributed GMV","livestream ended; blank: Current Viewers","",""],["SES-018","Brand F","2026-09-09 01:05:42","01.00","169.55","17","2026-09-09 00:02:50","2026-09-09 01:05:42","1:02:42","Y","161.87","5.95","","33.13","16880","2330","1590","63","0:00:39","0:00:28","","13.79%","","1.01%","","68.16%","115","Attributed GMV; Paid boost active","GMV differs from manual report","17",""],["SES-018","Brand F","2026-09-09 02:02:50","02.00","374.20","42","2026-09-09 00:02:50","2026-09-09 02:02:50","2:00:00","N","187.19","7.78","","59.58","30510","4070","2630","50","0:00:40","0:00:28","","13.34%","","1.26%","","64.57%","195","Attributed GMV; Paid boost active","","34",""],["SES-018","Brand F","2026-09-09 03:22:05","","429.53","48","2026-09-09 00:02:50","2026-09-09 03:22:05","3:19:14","N","129.59","6.74","","78.45","44150","5510","3240","32","0:00:40","0:00:28","","12.47%","","1.17%","","58.77%","243","Attributed GMV; Paid boost active","off-schedule capture","40",""],["SES-018","Brand F","2026-09-09 04:01:11","04.00","445.77","50","2026-09-09 00:02:50","2026-09-09 04:01:11","3:58:17","N","112.21","6.54","","83.91","48870","6010","3450","17","0:00:41","0:00:28","","12.29%","","1.16%","","57.47%","254","Attributed GMV; Paid boost active","","42",""],["SES-018","Brand F","2026-09-09 05:00:21","05.00","526.05","58","2026-09-09 00:02:50","2026-09-09 05:00:21","4:57:27","N","106.26","6.84","","94.34","59010","6980","3990","43","0:00:43","0:00:30","","11.83%","","1.18%","","57.18%","288","Attributed GMV; Paid boost active","","50",""],["SES-018","Brand F","2026-09-09 06:03:50","06.00","684.69","72","2026-09-09 00:02:50","2026-09-09 06:03:50","6:01:00","N","113.70","6.82","","122.14","79360","8640","4840","40","0:00:48","0:00:34","","10.89%","","1.24%","","56.04%","342","Attributed GMV; Paid boost active","","64",""],["SES-018","Brand F","2026-09-09 07:04:10","07.00","819.15","88","2026-09-09 00:02:50","2026-09-09 07:04:10","7:01:17","N","116.68","6.51","","152.93","102110","10230","5790","51","0:00:47","0:00:33","","10.02%","","1.16%","","56.60%","417","Attributed GMV; Paid boost active","","71",""],["SES-018","Brand F","2026-09-09 08:00:29","08.00","903.44","95","2026-09-09 00:02:50","2026-09-09 08:00:29","7:57:34","N","113.70","5.66","","193.64","127610","11920","6730","56","0:00:47","0:00:32","","9.34%","","1.10%","","56.49%","498","Attributed GMV; Paid boost active","","78",""],["SES-018","Brand F","2026-09-09 09:03:43","09.00","1,012.12","105","2026-09-09 00:02:50","2026-09-09 09:03:43","9:00:53","N","112.21","5","","244.79","151920","13860","","47","","0:00:35","","9.12%","3.76%","","1.11%","57.03%","","Attributed GMV; Paid boost active","","",""],["SES-018","Brand F","2026-09-09 10:04:20","10.00","1,201.04","121","2026-09-09 00:02:50","2026-09-09 10:04:20","10:01:30","N","119.66","4.98","","291.46","171740","15650","","67","","0:00:35","","9.11%","3.67%","","1.14%","58.15%","","Attributed GMV; Paid boost active","","",""],["SES-018","Brand F","2026-09-09 13:00:59","13.00","1,588.96","164","2026-09-09 00:02:50","2026-09-09 13:00:59","12:58:09","N","122.64","4.25","","451.84","282230","21450","","72","","0:00:37","","7.60%","3.31%","","1.13%","59.62%","","Attributed GMV; Paid boost active","","",""],["SES-018","Brand F","2026-09-09 14:03:44","14.00","1,820.47","186","2026-09-09 00:02:50","2026-09-09 14:03:44","14:00:54","N","130.09","4.38","","503.48","317110","23600","","68","","0:00:37","","7.44%","3.26%","","1.18%","60.00%","","Attributed GMV; Paid boost active","GMV differs from manual report","",""],["SES-018","Brand F","2026-09-09 14:30:18","","1,844.88","189","2026-09-09 00:02:50","2026-09-09 14:30:18","14:27:28","N","127.61","4.26","","525.82","332970","24440","","68","","0:00:37","","7.34%","3.21%","","1.16%","59.93%","","Attributed GMV; Paid boost active","off-schedule capture","",""],["SES-018","Brand F","2026-09-09 15:01:10","15.00","1,886.91","193","2026-09-09 00:02:50","2026-09-09 15:01:10","14:58:20","N","126.12","4.2","","544.69","349150","25310","15150","52","0:00:58","0:00:37","","7.25%","","1.08%","","59.88%","1150","Attributed GMV; Paid boost active","","174",""],["SES-018","Brand F","2026-09-09 16:00:17","16.00","2,044.71","207","2026-09-09 00:02:50","2026-09-09 16:00:17","15:57:23","N","128.10","4.18","","581.43","377530","26800","16100","48","0:00:58","0:00:37","","7.10%","","1.10%","","60.09%","1260","Attributed GMV; Paid boost active","","187",""],["SES-018","Brand F","2026-09-09 17:04:43","17.00","2,176.10","225","2026-09-09 00:02:50","2026-09-09 17:04:43","17:01:45","N","127.61","4.24","","619.66","413300","28690","17120","51","0:00:58","0:00:37","","6.94%","","1.12%","","59.69%","1370","Attributed GMV; Paid boost active","","205",""],["SES-018","Brand F","2026-09-09 18:01:39","18.00","2,341.96","244","2026-09-09 00:02:50","2026-09-09 18:01:39","17:58:45","N","130.09","4.26","","663.85","454990","30640","18120","73","0:00:58","0:00:36","","6.73%","","1.15%","","59.15%","1470","Attributed GMV; Paid boost active","","223",""],["SES-018","Brand F","2026-09-09 19:05:12","19.00","2,500.41","260","2026-09-09 00:02:50","2026-09-09 19:05:12","19:02:21","N","131.08","4.24","","715.00","501410","33140","19520","88","0:00:58","0:00:36","","6.61%","","1.15%","","58.91%","1620","Attributed GMV; Paid boost active","","239",""],["SES-018","Brand F","2026-09-09 20:00:45","20.00","2,555.33","267","2026-09-09 00:02:50","2026-09-09 20:00:45","19:57:47","N","128.10","4.03","","763.16","546370","35670","21100","63","0:00:57","0:00:35","","6.53%","","1.09%","","59.15%","1720","Attributed GMV; Paid boost active","","245",""],["SES-018","Brand F","2026-09-09 21:00:13","21.00","2,671.84","280","2026-09-09 00:02:50","2026-09-09 21:00:13","20:57:15","N","127.61","4.09","","788.48","579100","37620","22450","47","0:00:58","0:00:36","","6.50%","","1.08%","","59.67%","1820","Attributed GMV; Paid boost active","","258",""],["SES-018","Brand F","2026-09-09 22:00:24","22.00","3,121.95","336","2026-09-09 00:02:50","2026-09-09 22:00:24","21:57:29","N","142.01","4.66","","810.82","605670","39730","23960","85","0:00:58","0:00:35","","6.56%","","1.08%","","60.31%","1920","Attributed GMV; Paid boost active","","287",""],["SES-018","Brand F","2026-09-09 23:00:34","23.00","3,245.55","349","2026-09-09 00:02:50","2026-09-09 23:00:34","22:57:43","N","141.51","4.34","","904.67","663940","44000","25900","138","0:00:56","0:00:34","","6.63%","","1.04%","","58.86%","2060","Attributed GMV; Paid boost active","","299",""],["SES-018","Brand F","2026-09-09 23:58:23","23.59","3,363.34","362","2026-09-09 00:02:50","2026-09-09 23:58:23","23:55:33","N","140.52","4.09","","995.03","731490","47230","27640","","0:00:55","0:00:33","","6.46%","","1.01%","","58.51%","2210","Attributed GMV; Paid boost active","livestream ended; blank: Current Viewers","311",""]],"targets":[["Campaign","Campaign Date","Brand","Platform","Target GMV (EUR)","Source"],["9.9","2026-09-09","Brand B","Channel A","3,084.82","Planning baseline"],["9.9","2026-09-09","Brand B","Channel B","1,589.15","Planning baseline"],["9.9","2026-09-09","Brand A","Channel B","1,919.68","Planning baseline"],["9.9","2026-09-09","Brand D","Channel A","14,034.38","Planning baseline"],["9.9","2026-09-09","Brand D","Channel B","6,014.73","Planning baseline"],["9.9","2026-09-09","Brand E","Channel A","73,384.64","Planning baseline"],["9.9","2026-09-09","Brand F","Channel A","7,597.27","Planning baseline"],["9.9","2026-09-09","Brand F","Channel B","2,532.42","Planning baseline"],["9.9","2026-09-09","Brand C","Channel A","3,402.46","Planning baseline"],["9.9","2026-09-09","Brand C","Channel B","1,458.20","Planning baseline"],["11.11","2026-11-11","Brand B","Channel A","3,687.29","Planning baseline"],["11.11","2026-11-11","Brand C","Channel A","3,890.16","Planning baseline"],["11.11","2026-11-11","Brand C","Channel B","932.75","Planning baseline"],["11.11","2026-11-11","Brand D","Channel A","15,090.30","Planning baseline"],["11.11","2026-11-11","Brand D","Channel B","6,182.54","Planning baseline"],["11.11","2026-11-11","Brand E","Channel A","39,000.20","Planning baseline"],["11.11","2026-11-11","Brand F","Channel A","5,377.06","Planning baseline"],["11.11","2026-11-11","Brand F","Channel B","1,713.88","Planning baseline"],["11.11","2026-11-11","Brand A","Channel B","656.04","Planning baseline"]],"curve":[["Slot","Expected Cumulative Share","Based On"],["01.00","16.62%","Reference peak day: average cumulative share of 9 brand x channel series"],["02.00","20.61%","Reference peak day: average cumulative share of 9 brand x channel series"],["03.00","22.83%","Reference peak day: average cumulative share of 9 brand x channel series"],["04.00","24.69%","Reference peak day: average cumulative share of 9 brand x channel series"],["05.00","26.87%","Reference peak day: average cumulative share of 9 brand x channel series"],["06.00","30.50%","Reference peak day: average cumulative share of 9 brand x channel series"],["07.00","34.43%","Reference peak day: average cumulative share of 9 brand x channel series"],["08.00","37.96%","Reference peak day: average cumulative share of 9 brand x channel series"],["09.00","42.15%","Reference peak day: average cumulative share of 9 brand x channel series"],["10.00","46.51%","Reference peak day: average cumulative share of 9 brand x channel series"],["11.00","50.18%","Reference peak day: average cumulative share of 9 brand x channel series"],["12.00","53.77%","Reference peak day: average cumulative share of 9 brand x channel series"],["13.00","58.00%","Reference peak day: average cumulative share of 9 brand x channel series"],["14.00","61.65%","Reference peak day: average cumulative share of 9 brand x channel series"],["15.00","64.14%","Reference peak day: average cumulative share of 9 brand x channel series"],["16.00","67.51%","Reference peak day: average cumulative share of 9 brand x channel series"],["17.00","70.58%","Reference peak day: average cumulative share of 9 brand x channel series"],["18.00","74.03%","Reference peak day: average cumulative share of 9 brand x channel series"],["19.00","77.52%","Reference peak day: average cumulative share of 9 brand x channel series"],["20.00","82.14%","Reference peak day: average cumulative share of 9 brand x channel series"],["21.00","87.03%","Reference peak day: average cumulative share of 9 brand x channel series"],["22.00","91.90%","Reference peak day: average cumulative share of 9 brand x channel series"],["23.00","95.72%","Reference peak day: average cumulative share of 9 brand x channel series"],["23.59","100.00%","Reference peak day: average cumulative share of 9 brand x channel series"]],"benchmarks":[["Campaign","Campaign Date","Brand","Platform","GMV","Orders","Items Sold","Views","Comments","Conversion (Orders / Views)","AOV","Comments per 1k Views","Ads Cost","Paid Boost ROI (last)","Sessions","Source"],["9.9","2026-09-09","Brand D","Channel A","18,646.82","1,814","2,197","65,111","2,758","2.79%","10.28","42.4","","","1","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand D","Channel B","7,274.10","","982","35,830","1,860","","","51.9","283.02","31.07","1","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand B","Channel A","5,107.47","408","503","10,018","333","4.07%","12.52","33.2","","","2","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand B","Channel B","741.89","","99","4,080","182","","","44.6","86.08","6.84","2","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand F","Channel A","10,550.31","832","901","86,752","3,116","0.96%","12.68","35.9","","","1","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand F","Channel B","3,363.34","311","362","47,230","2,210","0.66%","10.81","46.8","995.03","4.09","1","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand A","Channel B","357.97","","270","9,590","335","","","34.9","47.91","8.3","2","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand C","Channel A","7,185.86","685","894","10,638","587","6.44%","10.49","55.2","","","3","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand C","Channel B","1,719.00","","394","5,850","511","","","87.4","9.93","","3","Final snapshot of each session, summed"],["9.9","2026-09-09","Brand E","Channel A","99,934.66","721","736","57,836","4,376","1.25%","138.61","75.7","","","2","Final snapshot of each session, summed"]]}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+/* ---------- state, data store, loader ---------- */
+const COLORS = ['#4e79a7', '#f28e2b', '#59a14f', '#b07aa1', '#76b7b2', '#9c755f', '#e15759', '#edc948', '#ff9da7', '#bab0ac'];
+const DEFAULTS = { asof: 0, campaign: '9.9', dir: 'asc', hidden: [], metric: 'hour_gmv', platform: 'All', sort: 'pace', view: 'pct' };
+const state = JSON.parse(JSON.stringify(DEFAULTS));
+const params = () => state;
+function setParams(o) { Object.assign(state, o); render(); }
+
+const SNAP = JSON.parse(document.getElementById('snapshot-data').textContent);
+const TABS = { chA: 'Channel_A', chB: 'Channel_B', targets: 'Master_Targets', curve: 'Pacing_Curve', benchmarks: 'Brand_Benchmarks' };
+const CONTRACT = {}; Object.keys(TABS).forEach(id => { CONTRACT[id] = SNAP.tabs[id][0]; });
+
+const keepText = new Set(['LivestreamID', 'Slot', 'Source File', 'Campaign', 'Campaign Date', 'Captured At', 'Livestream Start', 'Livestream End', 'Livestream Duration', 'View Duration', 'Avg Viewing Duration', 'Avg Viewing Duration per View']);
+function loader(values) {
+  if (!values || !values.length) return { columns: [], rows: [] };
+  const columns = values[0].map(c => String(c).replace(/^﻿/, '').trim());
+  const toValue = (col, cell) => {
+    if (cell === undefined || cell === null || cell === '') return null;
+    const t = String(cell).trim();
+    if (t === '') return null;
+    if (keepText.has(col)) return t;
+    if (/^-?[\d,]+(\.\d+)?$/.test(t)) return Number(t.replace(/,/g, ''));
+    if (/^-?[\d.]+%$/.test(t)) return Number(t.slice(0, -1)) / 100;
+    return t;
+  };
+  const rows = values.slice(1).filter(r => r.some(c => c !== '' && c != null))
+    .map(r => Object.fromEntries(columns.map((c, i) => [c, toValue(c, r[i])])));
+  return { columns, rows };
+}
+const raw = {};       // loaded tabs (arrays of row objects)
+const source = {};    // where each tab came from
+function loadSnapshot() { Object.keys(TABS).forEach(id => { raw[id] = loader(SNAP.tabs[id]).rows; source[id] = { kind: 'snapshot' }; }); }
+const store = {};     // calculated tables
+const data = id => { const d = raw[id] || store[id]; return d ? { status: 'ok', data: d } : { status: 'loading' }; };
+
+/* ---------- formatting ---------- */
+const fmtEur = v => v == null || !isFinite(v) ? '—' : (Math.abs(v) >= 1e6 ? '€' + d3.format(',.2f')(v / 1e6) + 'M' : Math.abs(v) >= 1e3 ? '€' + d3.format(',.1f')(v / 1e3) + 'K' : '€' + d3.format(',.0f')(v));
+const fmtAxisEur = v => v >= 1e6 ? d3.format(',.1f')(v / 1e6) + 'M' : v >= 1e3 ? d3.format(',.0f')(v / 1e3) + 'K' : d3.format(',.0f')(v);
+const fmtPct = v => v == null || !isFinite(v) ? '—' : d3.format('.1%')(v);
+const fmtPct2 = v => v == null || !isFinite(v) ? '—' : d3.format('.2%')(v);
+const fmtInt = v => v == null || !isFinite(v) ? '—' : d3.format(',.0f')(v);
+const slotLabel = h => h === 24 ? '23.59' : String(h).padStart(2, '0') + '.00';
+const statusCls = s => s === 'On track' ? 'ddt-ok' : s === 'At risk' ? 'ddt-warn' : s === 'Behind' ? 'ddt-bad' : 'ddt-info';
+
+/* ---------- calculation chain: snapshots → hourly → brand_hour → brand_status → cluster_kpi → action_points ---------- */
+function calcSnapshots(chA, chB, targets) {
+  const campaignOf = {};
+  targets.forEach(t => { campaignOf[String(t['Campaign Date'])] = String(t.Campaign); });
+  const num = v => v == null || v === '' || isNaN(+v) ? null : +v;
+  const sec = v => { if (v == null || v === '') return null; const p = String(v).split(':').map(Number); if (p.some(isNaN)) return null; return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : p[0] * 60 + p[1]; };
+  const slotHour = s => { if (s == null || s === '') return null; const t = String(s); if (t === '23.59') return 24; const h = parseInt(t, 10); return isNaN(h) ? null : h; };
+  const out = [];
+  const norm = v => {
+    const m = String(v || '').trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if (!m) return '';
+    const p2 = x => String(x || 0).padStart(2, '0');
+    return `${m[1]}-${p2(m[2])}-${p2(m[3])} ${p2(m[4])}:${p2(m[5])}:${p2(m[6])}`;
+  };
+  const add = (platform, r, m) => {
+    if (!r.Brand || !r['Captured At'] || num(r.GMV) == null) return;
+    const at = norm(r['Captured At']);
+    if (!at) return;
+    let day = at.slice(0, 10);
+    let hour = slotHour(r.Slot);
+    const start = norm(r['Livestream Start']).slice(0, 10);
+    const capHour = +at.slice(11, 13);
+    // midnight rule: a 00.00 snapshot of a session that began the day before closes that day as 23.59
+    if (start && start < day && (hour === 0 || (hour == null && capHour === 0))) { day = start; hour = hour === 0 ? 24 : null; }
+    if (hour === 0) hour = null;
+    const campaign = campaignOf[day];
+    if (!campaign) return;
+    out.push({ campaign, brand: r.Brand, platform, session: String(r.LivestreamID), at, hour, flags: String(r.Flags || ''), ...m });
+  };
+  chA.forEach(r => add('Channel A', r, { gmv: num(r.GMV), orders: num(r.Orders), buyers: num(r.Buyer), items: num(r['Quantity Sold']), views: num(r.Views), comments: num(r.Comment), likes: num(r.Likes), shares: num(r.Shares), ads: null, roi: null, watch: sec(r['View Duration']), boost: null }));
+  chB.forEach(r => add('Channel B', r, { gmv: num(r.GMV), orders: num(r['Attributed Orders']), buyers: null, items: num(r['Attributed Items Sold']), views: num(r.Views), comments: num(r.Comments), likes: null, shares: null, ads: num(r['Ads Cost']), roi: num(r['Paid Boost ROI']), watch: sec(r['Avg Viewing Duration']), boost: /Paid boost active/.test(String(r['GMV Type'] || '')) }));
+  return out;
+}
+
+function calcHourly(snaps) {
+  const additive = ['gmv', 'orders', 'items', 'buyers', 'views', 'comments', 'likes', 'shares', 'ads'];
+  const out = [];
+  for (const [, list] of d3.group(snaps, s => s.campaign + '|' + s.brand + '|' + s.platform)) {
+    list.sort((a, b) => d3.ascending(a.at, b.at));
+    const latest = new Map();
+    const byHour = new Map();
+    list.forEach(s => {
+      latest.set(s.session, s);
+      if (s.hour == null) return;
+      const row = { key: [s.campaign, s.brand, s.platform, s.hour].join('|'), campaign: s.campaign, brand: s.brand, platform: s.platform, hour: s.hour, at: s.at };
+      additive.forEach(m => { let t = 0, any = false; latest.forEach(v => { if (v[m] != null) { t += v[m]; any = true; } }); row[m] = any ? t : null; });
+      let ov = 0, oo = 0, og = 0; latest.forEach(v => { if (v.orders != null && v.views != null) { ov += v.views; oo += v.orders; og += v.gmv; } });
+      row.views_o = ov; row.orders_o = oo; row.gmv_o = og;
+      row.roi = s.roi; row.watch = s.watch; row.boost = s.boost;
+      row.ended = /livestream ended/.test(s.flags);
+      byHour.set(s.hour, row);
+    });
+    byHour.forEach(v => out.push(v));
+  }
+  return out;
+}
+
+function calcBrandHour(hourly, targets, curve) {
+  const p = params();
+  const campaign = String(p.campaign || '');
+  const platform = p.platform || 'All';
+  const share = { 0: 0 };
+  curve.forEach(c => { const h = String(c.Slot) === '23.59' ? 24 : parseInt(c.Slot, 10); share[h] = +c['Expected Cumulative Share']; });
+  const tg = targets.filter(t => String(t.Campaign) === campaign && (platform === 'All' || t.Platform === platform));
+  const rows = hourly.filter(r => r.campaign === campaign && (platform === 'All' || r.platform === platform));
+  const latest = d3.max(rows, r => r.hour) || 0;
+  const additive = ['gmv', 'orders', 'items', 'buyers', 'views', 'comments', 'likes', 'shares', 'ads', 'views_o', 'orders_o', 'gmv_o'];
+  const out = [];
+  [...new Set(tg.map(t => t.Brand))].forEach(brand => {
+    const mine = tg.filter(t => t.Brand === brand);
+    const target = d3.sum(mine, t => +t['Target GMV (EUR)']);
+    const plats = [...new Set(mine.map(t => t.Platform))];
+    const series = plats.map(pl => {
+      const rs = rows.filter(r => r.brand === brand && r.platform === pl);
+      const by = new Map(rs.map(r => [r.hour, r]));
+      const s = []; let last = null;
+      for (let h = 1; h <= latest; h++) {
+        const r = by.get(h);
+        if (r) { last = r; s[h] = { row: r, state: 'data' }; }
+        else {
+          const later = rs.some(x => x.hour > h);
+          s[h] = { row: last, state: (!last && !later) ? 'none' : (last && last.ended) ? 'not live' : later ? 'missing' : 'not live' };
+        }
+      }
+      return { pl, s };
+    });
+    const hist = [];
+    for (let h = 1; h <= latest; h++) {
+      const o = { key: brand + '|' + h, campaign, brand, platforms: plats.join(' + '), hour: h, slot: h === 24 ? '23.59' : String(h).padStart(2, '0') + '.00', target };
+      additive.forEach(m => { let t = null; series.forEach(({ s }) => { const r = s[h].row; if (r && r[m] != null) t = (t || 0) + r[m]; }); o[m] = t; });
+      o.gmv = o.gmv || 0;
+      o.missing = series.filter(({ s }) => s[h].state === 'missing').map(x => x.pl).join(', ');
+      o.notlive = series.filter(({ s }) => s[h].state === 'not live').map(x => x.pl).join(', ');
+      o.fresh = series.some(({ s }) => s[h].state === 'data');
+      const tt = series.find(x => x.pl === 'Channel B');
+      const tr = tt && tt.s[h].row;
+      o.roi = tr ? tr.roi : null;
+      o.boost_off = !!(tr && tr.boost === false);
+      const sh = share[h];
+      o.achieved = target ? o.gmv / target : null;
+      o.expected_share = sh ?? null;
+      o.expected = sh ? target * sh : null;
+      o.pace = o.expected ? o.gmv / o.expected : null;
+      o.rr_linear = o.gmv / h * 24;
+      o.rr_curve = sh ? o.gmv / sh : null;
+      o.gap = Math.max(0, target - o.gmv);
+      o.hours_left = 24 - h;
+      o.need_per_hour = o.hours_left > 0 ? o.gap / o.hours_left : null;
+      const prev = hist[h - 1];
+      const d = (a, b) => (a != null && b != null && a - b >= 0) ? a - b : null;
+      o.hour_gmv = prev ? d(o.gmv, prev.gmv) : o.gmv;
+      o.hour_orders = prev ? d(o.orders_o, prev.orders_o) : o.orders_o;
+      o.hour_views = prev ? d(o.views, prev.views) : o.views;
+      o.hour_views_o = prev ? d(o.views_o, prev.views_o) : o.views_o;
+      o.hour_comments = prev ? d(o.comments, prev.comments) : o.comments;
+      const back = hist[Math.max(0, h - 3)];
+      o.rate3 = h > 3 && back ? (o.gmv - back.gmv) / 3 : o.gmv / h;
+      o.cr = o.views_o ? o.orders_o / o.views_o : null;
+      o.cr_hour = o.hour_views_o && o.hour_orders != null ? o.hour_orders / o.hour_views_o : null;
+      o.aov = o.orders_o ? o.gmv_o / o.orders_o : null;
+      o.aov_hour = prev && o.hour_orders ? (d(o.gmv_o, prev.gmv_o) ?? 0) / o.hour_orders : null;
+      o.cpk = o.views ? (o.comments || 0) / o.views * 1000 : null;
+      o.cpk_hour = o.hour_views ? (o.hour_comments ?? 0) / o.hour_views * 1000 : null;
+      o.status = o.pace == null ? 'No data' : o.pace >= 1 ? 'On track' : o.pace >= 0.9 ? 'At risk' : 'Behind';
+      hist[h] = o;
+      out.push(o);
+    }
+  });
+  return out;
+}
+
+function calcBrandStatus(bh, benchmarks) {
+  const p = params();
+  const latest = d3.max(bh, r => r.hour) || 0;
+  const H = +p.asof > 0 ? Math.min(+p.asof, latest) : latest;
+  return bh.filter(r => r.hour === H).map(r => {
+    const prior = benchmarks.filter(b => b.Brand === r.brand && String(b.Campaign) !== r.campaign && (p.platform === 'All' || !p.platform || b.Platform === p.platform) && b['Conversion (Orders / Views)'] != null);
+    const lastDate = d3.max(prior, b => String(b['Campaign Date']));
+    const recent = prior.filter(b => String(b['Campaign Date']) === lastDate);
+    const views = d3.sum(recent, b => +b.Views || 0);
+    const prev_cr = views ? d3.sum(recent, b => (+b['Conversion (Orders / Views)']) * (+b.Views || 0)) / views : null;
+    let lastData = 0;
+    bh.filter(x => x.brand === r.brand && x.hour <= H && x.fresh).forEach(x => { lastData = Math.max(lastData, x.hour); });
+    return { ...r, prev_cr, hour_last: lastData, last_slot: lastData ? (lastData === 24 ? '23.59' : String(lastData).padStart(2, '0') + '.00') : '—' };
+  });
+}
+
+function calcPortfolioKpi(bs) {
+  if (!bs.length) return [];
+  const s = k => d3.sum(bs, b => b[k] || 0);
+  const gmv = s('gmv'), target = s('target'), expected = s('expected'), H = bs[0].hour;
+  const pace = expected ? gmv / expected : null;
+  return [{ hour: H, gmv, target, achieved: target ? gmv / target : null, expected_share: bs[0].expected_share, pace, gap: Math.max(0, target - gmv), need_per_hour: H < 24 ? Math.max(0, target - gmv) / (24 - H) : null, rate3: s('rate3'), rr_curve: s('rr_curve'), rr_linear: s('rr_linear'), orders: s('orders_o'), cr: s('views_o') ? s('orders_o') / s('views_o') : null, status: pace == null ? 'No data' : pace >= 1 ? 'On track' : pace >= 0.9 ? 'At risk' : 'Behind' }];
+}
+
+function calcActionPoints(bh) {
+    const rp = v => v == null || !isFinite(v) ? '—' : (Math.abs(v) >= 1e6 ? '€' + (v / 1e6).toFixed(2) + 'M' : Math.abs(v) >= 1e3 ? '€' + (v / 1e3).toFixed(1) + 'K' : '€' + Math.round(v));
+  const pc = v => v == null || !isFinite(v) ? '—' : (v * 100).toFixed(v < 0.1 ? 2 : 1) + '%';
+  const slot = h => h === 24 ? '23.59' : String(h).padStart(2, '0') + '.00';
+  const out = [];
+  const byHour = d3.group(bh, r => r.hour);
+  const LOW = 0.8, MIN_VIEWS = 50;
+  for (const [h, rows] of byHour) {
+    const prevRows = new Map((byHour.get(h - 1) || []).map(r => [r.brand, r]));
+    const avg = k => { const v = rows.map(r => r[k]).filter(x => x != null && isFinite(x)); return v.length ? d3.mean(v) : null; };
+    const allCr = avg('cr'), allCpk = avg('cpk');
+    let n = 0;
+    const push = (kind, rank, brand, text) => out.push({ key: h + '|' + (n++), hour: h, slot: slot(h), kind, rank, brand, text });
+    rows.filter(r => r.status === 'Behind' || r.status === 'At risk').sort((a, b) => b.gap - a.gap).forEach(r => {
+      push(r.status === 'Behind' ? 'Behind' : 'At risk', r.status === 'Behind' ? 1 : 2, r.brand,
+        `▼ ${h < 24 ? 'pace ' + pc(r.pace) + ' · ' + pc(r.achieved) + ' of target' : pc(r.achieved) + ' of target'} · ${r.need_per_hour != null ? 'variance ' + rp(r.gap) + ' · required ' + rp(r.need_per_hour) + '/h vs ' + rp(r.rate3) + '/h current' : 'closed ' + rp(r.gap) + ' short'}`);
+    });
+    rows.forEach(r => {
+      const pr = prevRows.get(r.brand);
+      if (h >= 2 && r.hour_views_o >= MIN_VIEWS && r.cr_hour != null && pr && pr.cr && r.cr_hour < pr.cr * LOW)
+        push('Funnel flag', 3, r.brand, `conversion ▼ ${pc(r.cr_hour)} last hour (day ${pc(pr.cr)})`);
+      if (r.cr != null && allCr && r.cr < allCr * LOW && r.views_o >= MIN_VIEWS)
+        push('Funnel flag', 3, r.brand, `conversion ▼ ${pc(r.cr)} (all brands ${pc(allCr)})`);
+      if (h >= 3 && pr && r.hour_views != null && pr.views && r.hour_views < (pr.views / (h - 1)) * LOW && r.fresh && !r.notlive)
+        push('Funnel flag', 3, r.brand, `views ▼ ${Math.round(r.hour_views).toLocaleString('en-US')}/h (avg ${Math.round(pr.views / (h - 1)).toLocaleString('en-US')}/h)`);
+      if (h >= 2 && pr && pr.aov && r.aov_hour != null && r.hour_orders >= 5 && r.aov_hour < pr.aov * LOW)
+        push('Funnel flag', 3, r.brand, `AOV ▼ ${rp(r.aov_hour)} last hour (day ${rp(pr.aov)})`);
+      if (r.cpk != null && allCpk && r.cpk < allCpk * LOW && r.views >= MIN_VIEWS)
+        push('Funnel flag', 3, r.brand, `comments ▼ ${r.cpk.toFixed(1)}/1k views (all brands ${allCpk.toFixed(1)})`);
+      if (r.boost_off && r.platforms.includes('Channel B'))
+        push('Paid media', 4, r.brand, `paid boost switched off`);
+      else if (h >= 3 && r.roi != null) {
+        const then = bh.find(x => x.brand === r.brand && x.hour === h - 3 && x.roi != null);
+        const base = then ? then.roi : null;
+        if (base && r.roi < base * LOW) push('Paid media', 4, r.brand, `ROI ▼ ${r.roi.toFixed(1)} (3h ago ${base.toFixed(1)}) · spend ${rp(r.ads)}`);
+      }
+      if (r.missing) push('Data', 5, r.brand, `no data checkpoint for ${r.missing} at ${slot(h)}`);
+    });
+    rows.filter(r => r.status === 'On track').sort((a, b) => b.pace - a.pace).forEach(r => push('On track', 6, r.brand, `▲ ${h < 24 ? 'pace ' + pc(r.pace) + ' · ' + pc(r.achieved) + ' of target' : pc(r.achieved) + ' of target'}`));
+  }
+  return out.sort((a, b) => b.hour - a.hour || a.rank - b.rank);
+}
+
+function recompute() {
+  store.snapshots = calcSnapshots(raw.chA, raw.chB, raw.targets);
+  store.hourly = calcHourly(store.snapshots);
+  store.brand_hour = calcBrandHour(store.hourly, raw.targets, raw.curve);
+  store.brand_status = calcBrandStatus(store.brand_hour, raw.benchmarks);
+  store.cluster_kpi = calcPortfolioKpi(store.brand_status);
+  store.action_points = calcActionPoints(store.brand_hour);
+}
+
+/* ---------- context shared by the drawing code ---------- */
+function ddtCtx() {
+  const bh = data('brand_hour'), tg = data('targets');
+  if (bh.status !== 'ok' || tg.status !== 'ok') return { status: 'loading' };
+  const p = params();
+  const latest = d3.max(bh.data, r => r.hour) || 0;
+  const H = +p.asof > 0 ? Math.min(+p.asof, latest) : latest;
+  const campaignBrands = [...new Set(tg.data.filter(t => String(t.Campaign) === String(p.campaign)).map(t => t.Brand))].sort();
+  const brands = [...new Set(bh.data.map(r => r.brand))].sort().map(b => ({ brand: b, color: COLORS[campaignBrands.indexOf(b) % COLORS.length], rows: bh.data.filter(r => r.brand === b).sort((x, y) => x.hour - y.hour) }));
+  return { status: 'ok', H, latest, brands, hidden: new Set(p.hidden || []), view: p.view || 'pct', metric: p.metric || 'hour_gmv', sort: p.sort || 'pace', dir: p.dir || 'asc' };
+}
+
+/* ---------- draw registry (replaces dash.draw) ---------- */
+const draws = {};
+const draw = (name, fn) => { draws[name] = fn; };
+function render() {
+  const camps = campaigns();
+  if (camps.length && !camps.some(([c]) => c === String(state.campaign))) { state.campaign = camps[0][0]; state.asof = 0; }
+  recompute();
+  Object.keys(draws).forEach(name => document.querySelectorAll('[data-draw="' + name + '"]').forEach(el => draws[name](el)));
+  syncControls();
+  renderSources();
+}
+function campaigns() { return [...new Map((raw.targets || []).map(r => [String(r.Campaign), String(r['Campaign Date'])])).entries()].sort((a, b) => d3.descending(a[1], b[1])); }
+function syncControls() {
+  const p = params();
+  document.querySelectorAll('.ddt-platform').forEach(el => { el.value = p.platform || 'All'; });
+  document.querySelectorAll('.ddt-metric').forEach(el => { el.value = p.metric || 'hour_gmv'; });
+  document.querySelectorAll('.ddt-view').forEach(el => el.setAttribute('aria-pressed', String((p.view || 'pct') === el.dataset.view)));
+  document.querySelectorAll('.ddt-table th[data-sort]').forEach(th => th.setAttribute('aria-sort', (p.sort || 'pace') === th.dataset.sort && th.dataset.field !== 'status' ? ((p.dir || 'asc') === 'asc' ? 'ascending' : 'descending') : 'none'));
+  const c = ddtCtx();
+  document.querySelectorAll('.ddt-asof').forEach(el => { if (c.status === 'ok' && document.activeElement !== el) el.value = String(c.H || 1); });
+}
+
+document.querySelectorAll('.ddt-platform').forEach(el => el.addEventListener('change', () => setParams({ platform: el.value })));
+document.querySelectorAll('.ddt-asof').forEach(el => el.addEventListener('input', () => setParams({ asof: +el.value })));
+document.querySelectorAll('.ddt-view').forEach(el => el.addEventListener('click', () => setParams({ view: el.dataset.view })));
+document.querySelectorAll('.ddt-metric').forEach(el => el.addEventListener('change', () => setParams({ metric: el.value })));
+document.querySelectorAll('.ddt-table th[data-sort]').forEach(th => th.addEventListener('click', () => {
+  const p = params(); const k = th.dataset.sort;
+  setParams({ sort: k, dir: p.sort === k && p.dir === 'desc' ? 'asc' : p.sort === k ? 'desc' : 'desc' });
+}));
+
+/* ---------- page sections ---------- */
+const kpi = () => { const k = store.cluster_kpi; return k && k.length ? k[0] : null; };
+const textDraw = (name, fn) => draw(name, el => { const k = kpi(); el.textContent = k ? fn(k) : '—'; });
+
+draw('campaign', sel => {
+  const camps = campaigns();
+  sel.replaceChildren(...camps.map(([c, d]) => new Option(c + ' · ' + d3.timeFormat('%-d %b %Y')(new Date(d + 'T00:00:00')), c)));
+  sel.value = String(params().campaign || '');
+  sel.onchange = () => setParams({ campaign: sel.value, asof: 0, hidden: [] });
+});
+draw('asof_label', el => { const c = ddtCtx(); el.textContent = c.status === 'ok' && c.H ? slotLabel(c.H) : '—'; });
+draw('ap_hour', el => { const c = ddtCtx(); el.textContent = c.status === 'ok' && c.H ? slotLabel(c.H) : '—'; });
+draw('ap_gap', el => {
+  const k = kpi(); if (!k) { el.textContent = '—'; return; }
+  el.textContent = `Portfolio ${k.pace >= 1 ? '▲' : '▼'} ${fmtEur(k.gmv)} / ${fmtEur(k.target)} (${fmtPct(k.achieved)})${k.hour < 24 ? ' · pace ' + fmtPct(k.pace) : ''} · ` +
+    (k.gap > 0 ? `variance ${fmtEur(k.gap)}${k.need_per_hour != null ? ' · required ' + fmtEur(k.need_per_hour) + '/h vs ' + fmtEur(k.rate3) + '/h current' : ''}` : 'target reached');
+});
+draw('ap_list', el => {
+  const a = data('action_points'); const c = ddtCtx();
+  el.replaceChildren();
+  if (a.status !== 'ok' || c.status !== 'ok') return;
+  const color = b => (c.brands.find(x => x.brand === b) || {}).color || 'var(--color-fg)';
+  const items = a.data.filter(x => x.hour === c.H);
+  const box = (title, cls, kinds, empty) => {
+    const mine = items.filter(x => kinds.includes(x.kind));
+    const byBrand = d3.groups(mine, x => x.brand);
+    const d = document.createElement('div'); d.className = 'ddt-box ' + cls;
+    const h = document.createElement('h3'); const t = document.createElement('span'); t.textContent = title; const n = document.createElement('span'); n.className = 'n'; n.textContent = String(byBrand.length); h.append(t, n); d.append(h);
+    if (!byBrand.length) { const p = document.createElement('div'); p.className = 'empty'; p.textContent = empty; d.append(p); el.append(d); return; }
+    const ul = document.createElement('ul');
+    byBrand.forEach(([brand, list]) => {
+      const li = document.createElement('li');
+      const b = document.createElement('strong'); b.style.color = color(brand); b.textContent = brand;
+      const tx = document.createElement('span');
+      tx.textContent = ' ' + list.map(x => (x.kind === 'At risk' ? 'at risk ' : '') + x.text).join(' · ');
+      li.append(b, tx); ul.append(li);
+    });
+    d.append(ul); el.append(d);
+  };
+  box('On track', 'ok', ['On track'], 'No brand on track yet.');
+  box('Behind plan or at risk', 'bad', ['Behind', 'At risk'], 'No brand behind pace.');
+  box('Paid media', 'warn', ['Paid media'], 'No paid-media issues.');
+  box('Funnel and engagement flags', 'warn', ['Funnel flag'], 'No metric flags.');
+});
+draw('ap_rules', el => { el.textContent = 'Escalation rules: pace = GMV ÷ (target × plan-curve share for this hour); on track ≥ 100%, at risk 90–100%, behind < 90%. A metric is flagged when it is at least 20% below the brand’s own day average or, for conversion and engagement rates, the all-brand average. Paid-media ROI is compared with its level three hours earlier.'; });
+
+textDraw('k_gmv', k => fmtEur(k.gmv));
+textDraw('k_target', k => fmtEur(k.target));
+textDraw('k_ach', k => fmtPct(k.achieved));
+textDraw('k_exp', k => fmtPct(k.expected_share));
+draw('k_pace', el => { const k = kpi(); el.textContent = k ? fmtPct(k.pace) : '—'; el.className = 'val ' + (k ? statusCls(k.status) : ''); });
+draw('k_status', el => { const k = kpi(); el.textContent = k ? k.status : '—'; el.className = 'note ' + (k ? statusCls(k.status) : ''); });
+textDraw('k_gap', k => fmtEur(k.gap));
+textDraw('k_need', k => fmtEur(k.need_per_hour));
+textDraw('k_rate', k => fmtEur(k.rate3));
+textDraw('k_curve', k => fmtEur(k.rr_curve));
+textDraw('k_lin', k => fmtEur(k.rr_linear));
+textDraw('k_orders', k => fmtInt(k.orders));
+textDraw('k_cr', k => fmtPct2(k.cr));
+draw('thresholds', el => { el.textContent = 'Status: on track at pace ≥ 100%, at risk 90–100%, behind under 90%. Current / hr = average GMV per hour over the last three hours.'; });
+
+draw('tbl', tbody => {
+  const b = data('brand_status'); const c = ddtCtx();
+  tbody.replaceChildren();
+  if (b.status !== 'ok' || c.status !== 'ok') return;
+  const k = c.sort, asc = c.dir === 'asc';
+  const rows = [...b.data].sort((x, y) => { const a = x[k], z = y[k]; if (a == null && z == null) return 0; if (a == null) return 1; if (z == null) return -1; return (typeof a === 'string' ? a.localeCompare(z) : a - z) * (asc ? 1 : -1); });
+  rows.forEach(r => {
+    const tr = tbody.insertRow(); tr.dataset.key = encodeURIComponent(r.brand);
+    const cells = [r.brand, fmtEur(r.gmv), fmtEur(r.target), fmtPct(r.achieved), fmtPct(r.pace), r.status, fmtEur(r.gap), fmtEur(r.need_per_hour), fmtEur(r.rate3), fmtEur(r.rr_curve), fmtEur(r.rr_linear), fmtInt(r.orders_o), fmtInt(r.views), fmtPct2(r.cr), fmtEur(r.aov), fmtInt(r.comments), fmtInt(r.likes), fmtInt(r.shares), fmtEur(r.ads), r.roi == null ? '—' : r.roi.toFixed(1), fmtPct2(r.prev_cr), r.last_slot];
+    cells.forEach((v, i) => { const td = tr.insertCell(); td.textContent = v; if (i === 4 || i === 5) td.className = statusCls(r.status); });
+  });
+});
+
+draw('chips', el => {
+  const c = ddtCtx(); el.replaceChildren(); if (c.status !== 'ok') return;
+  [{ brand: 'Portfolio', color: 'var(--color-fg)' }, ...c.brands].forEach(it => {
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ddt-chip';
+    btn.setAttribute('aria-pressed', String(!c.hidden.has(it.brand)));
+    const sw = document.createElement('span'); sw.className = 'sw'; sw.style.background = it.color;
+    const tx = document.createElement('span'); tx.textContent = it.brand === 'Portfolio' ? 'Portfolio (all brands)' : it.brand;
+    btn.append(sw, tx);
+    btn.addEventListener('click', () => { const h = new Set(params().hidden || []); h.has(it.brand) ? h.delete(it.brand) : h.add(it.brand); setParams({ hidden: [...h] }); });
+    el.append(btn);
+  });
+});
+
+function addTip(el, svg, x, m, W, Ht, hMax, linesFor) {
+  const tip = document.createElement('div'); tip.className = 'ddt-tip'; tip.hidden = true; el.append(tip);
+  const rule = svg.append('line').attr('y1', m.t).attr('y2', Ht - m.b).style('stroke', 'var(--cds-chart-reference)').style('display', 'none');
+  svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', Math.max(0, W - m.l - m.r)).attr('height', Math.max(0, Ht - m.t - m.b)).style('fill', 'transparent')
+    .on('pointermove', ev => {
+      const [px, py] = d3.pointer(ev);
+      const h = Math.max(1, Math.min(hMax, Math.round(x.invert(px))));
+      rule.attr('x1', x(h)).attr('x2', x(h)).style('display', null);
+      tip.replaceChildren();
+      const hd = document.createElement('div'); hd.className = 'h'; hd.textContent = slotLabel(h); tip.append(hd);
+      linesFor(h).forEach(([label, color, value]) => { const row = document.createElement('div'); const sw = document.createElement('span'); sw.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:' + color; const tx = document.createElement('span'); tx.textContent = label + ': ' + value; row.append(sw, tx); tip.append(row); });
+      tip.hidden = false;
+      tip.style.left = Math.max(0, Math.min(px + 12, el.clientWidth - tip.offsetWidth - 4)) + 'px';
+      tip.style.top = Math.max(0, py - 10) + 'px';
+    })
+    .on('pointerleave', () => { tip.hidden = true; rule.style('display', 'none'); });
+}
+function axes(svg, x, y, W, Ht, m, yFmt) {
+  svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - m.l - m.r)).tickFormat(yFmt))
+    .call(g => g.selectAll('.tick line').style('stroke', 'var(--cds-chart-grid)')).call(g => g.select('.domain').remove());
+  svg.append('g').attr('transform', `translate(0,${Ht - m.b})`).call(d3.axisBottom(x).tickValues(W < 480 ? [0, 6, 12, 18, 24] : d3.range(0, 25, 3)).tickFormat(h => h === 24 ? '24' : String(h).padStart(2, '0')));
+}
+
+draw('trend', el => {
+  const c = ddtCtx(); el.replaceChildren();
+  if (c.status !== 'ok' || !c.H) { el.textContent = '—'; return; }
+  const W = el.clientWidth || 640, Ht = 300, m = { t: 12, r: 16, b: 28, l: 60 };
+  const pct = c.view === 'pct';
+  const at = (b, h) => b.rows.find(r => r.hour === h);
+  const totalTarget = d3.sum(c.brands, b => (b.rows[0] || {}).target || 0);
+  const clusterAt = h => d3.sum(c.brands, b => (at(b, h) || {}).gmv || 0);
+  const series = [{ brand: 'Portfolio', color: 'var(--color-fg)', val: h => pct ? clusterAt(h) / totalTarget : clusterAt(h), raw: clusterAt }, ...c.brands.map(b => ({ brand: b.brand, color: b.color, val: h => { const r = at(b, h); return r ? (pct ? r.achieved : r.gmv) : null; }, raw: h => (at(b, h) || {}).gmv }))].filter(s => !c.hidden.has(s.brand));
+  const share = h => { const r = c.brands.length && at(c.brands[0], h); return r ? r.expected_share : null; };
+  const hours = d3.range(1, c.H + 1);
+  const ref = hours.map(h => ({ h, v: pct ? share(h) : (c.hidden.has('Portfolio') ? null : totalTarget * (share(h) || 0)) })).filter(d => d.v != null);
+  const vals = [...series.flatMap(s => hours.map(s.val)), ...ref.map(d => d.v)].filter(v => v != null && isFinite(v));
+  const x = d3.scaleLinear([0, 24], [m.l, W - m.r]);
+  const y = d3.scaleLinear([0, (d3.max(vals) || 1) * 1.05], [Ht - m.b, m.t]).nice();
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${Ht}`).attr('role', 'img').attr('aria-label', 'Cumulative GMV vs. plan curve');
+  axes(svg, x, y, W, Ht, m, pct ? d3.format('.0%') : fmtAxisEur);
+  if (ref.length) svg.append('path').datum(ref).attr('d', d3.line().x(d => x(d.h)).y(d => y(d.v))).style('fill', 'none').style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '5 4').style('stroke-width', 1.5);
+  svg.append('line').attr('x1', x(c.H)).attr('x2', x(c.H)).attr('y1', m.t).attr('y2', Ht - m.b).style('stroke', 'var(--cds-chart-muted)');
+  series.forEach(s => { const pts = hours.map(h => ({ h, v: s.val(h) })).filter(d => d.v != null && isFinite(d.v)); svg.append('path').datum(pts).attr('d', d3.line().x(d => x(d.h)).y(d => y(d.v))).style('fill', 'none').style('stroke', s.color).style('stroke-width', s.brand === 'Portfolio' ? 3 : 1.75); });
+  addTip(el, svg, x, m, W, Ht, c.H, h => [...series.map(s => [s.brand, s.color, pct ? fmtPct(s.val(h)) + ' (' + fmtEur(s.raw(h)) + ')' : fmtEur(s.val(h))]), ['Expected pace', 'var(--cds-chart-reference)', pct ? fmtPct(share(h)) : fmtEur(totalTarget * (share(h) || 0))]]);
+});
+
+draw('metric', el => {
+  const c = ddtCtx(); el.replaceChildren();
+  if (c.status !== 'ok' || !c.H) { el.textContent = '—'; return; }
+  const k = c.metric;
+  const isPct = k === 'cr' || k === 'cr_hour';
+  const isMoney = k === 'hour_gmv' || k === 'aov' || k === 'ads';
+  const fmtV = v => v == null || !isFinite(v) ? '—' : isPct ? fmtPct2(v) : isMoney ? fmtEur(v) : k === 'roi' || k === 'cpk' ? v.toFixed(1) : fmtInt(v);
+  const W = el.clientWidth || 640, Ht = 220, m = { t: 10, r: 16, b: 28, l: 60 };
+  const shown = c.brands.filter(b => !c.hidden.has(b.brand));
+  const hours = d3.range(1, c.H + 1);
+  const val = (b, h) => { const r = b.rows.find(r => r.hour === h); return r ? r[k] : null; };
+  const vals = shown.flatMap(b => hours.map(h => val(b, h))).filter(v => v != null && isFinite(v));
+  if (!vals.length) { el.textContent = 'No data for this metric with the brands and platform selected.'; return; }
+  const x = d3.scaleLinear([0, 24], [m.l, W - m.r]);
+  const y = d3.scaleLinear([Math.min(0, d3.min(vals)), d3.max(vals) * 1.08 || 1], [Ht - m.b, m.t]).nice();
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${Ht}`).attr('role', 'img').attr('aria-label', 'Brand metric by hour');
+  axes(svg, x, y, W, Ht, m, isPct ? d3.format('.1%') : isMoney ? fmtAxisEur : d3.format('~s'));
+  shown.forEach(b => { const pts = hours.map(h => ({ h, v: val(b, h) })).filter(d => d.v != null && isFinite(d.v)); svg.append('path').datum(pts).attr('d', d3.line().defined(d => d.v != null).x(d => x(d.h)).y(d => y(d.v))).style('fill', 'none').style('stroke', b.color).style('stroke-width', 1.75); svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', d => x(d.h)).attr('cy', d => y(d.v)).attr('r', 2).style('fill', b.color); });
+  addTip(el, svg, x, m, W, Ht, c.H, h => shown.map(b => [b.brand, b.color, fmtV(val(b, h))]));
+});
+
+draw('history', el => {
+  const a = data('action_points'); el.replaceChildren();
+  if (a.status !== 'ok') return;
+  const c = ddtCtx();
+  for (const [h, items] of d3.group(a.data, x => x.hour)) {
+    if (c.status === 'ok' && h > c.latest) continue;
+    const det = document.createElement('details');
+    const sum = document.createElement('summary');
+    const behind = items.filter(x => x.kind === 'Behind').map(x => x.brand);
+    const risk = items.filter(x => x.kind === 'At risk').map(x => x.brand);
+    sum.textContent = slotLabel(h) + ' · ' + (behind.length ? '▼ ' + behind.join(', ') : 'none behind') + (risk.length ? ' · at risk ' + risk.join(', ') : '') + ' · ' + items.filter(x => x.kind === 'Funnel flag' || x.kind === 'Paid media').length + ' alerts';
+    const ul = document.createElement('ul');
+    items.forEach(x => { const li = document.createElement('li'); const k = document.createElement('span'); k.textContent = x.kind + ': '; const b = document.createElement('strong'); b.textContent = x.brand; b.style.color = (c.status === 'ok' && (c.brands.find(y => y.brand === x.brand) || {}).color) || 'inherit'; const tx = document.createElement('span'); tx.textContent = ' ' + x.text; li.append(k, b, tx); ul.append(li); });
+    det.append(sum, ul); el.append(det);
+  }
+});
+
+draw('health', ul => {
+  ul.replaceChildren();
+  const add = t => { const li = document.createElement('li'); li.textContent = t; ul.append(li); };
+  const c = ddtCtx(); if (c.status !== 'ok') return;
+  const p = params(); let n = 0;
+  if (!c.latest) { add('No data checkpoints for ' + p.campaign + ' yet, so there is nothing to show for this peak event.'); return; }
+  c.brands.forEach(b => {
+    const rows = b.rows.filter(r => r.hour <= c.H);
+    const miss = rows.filter(r => r.missing).map(r => slotLabel(r.hour) + ' (' + r.missing + ')');
+    const off = rows.filter(r => r.notlive).length;
+    if (miss.length) { add(b.brand + ': no data checkpoint at ' + miss.join(', ') + '; last value carried forward'); n++; }
+    if (off) { add(b.brand + ': not live on at least one channel in ' + off + ' of ' + rows.length + ' hours'); n++; }
+  });
+  const flags = store.snapshots.filter(s => s.campaign === String(p.campaign) && (p.platform === 'All' || !p.platform || s.platform === p.platform) && (s.hour == null || s.hour <= c.H) && /counter mid-animation|off-schedule|differs from manual report|blank:/i.test(s.flags));
+  d3.rollups(flags, v => v.length, s => s.brand).forEach(([b, k]) => { add(b + ': ' + k + ' checkpoint(s) with flags (blank or low-confidence fields, off-schedule captures, or a value that differs from the manual report)'); n++; });
+  if (!n) add('No gaps or flags up to ' + slotLabel(c.H) + '.');
+});
+
+/* ---------- data source: snapshot banner and CSV upload ---------- */
+function parseCSV(text) {
+  const rows = []; let row = [], cell = '', q = false;
+  text = text.replace(/^﻿/, '');
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+const snapDate = () => new Date(SNAP.fetchedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+function renderSources() {
+  const up = Object.keys(TABS).filter(id => source[id].kind === 'upload');
+  document.getElementById('snap-pill').textContent = up.length ? 'Sample data + your CSV' : 'Anonymised sample data';
+  document.getElementById('snap-text').textContent = 'Brands and channels are masked; figures are real extracts, embedded in this page (extract of ' + snapDate() + ').' + (up.length ? ' ' + up.length + ' table(s) replaced by your CSV in this view.' : '');
+  document.getElementById('src-body').replaceChildren(...Object.keys(TABS).map(id => {
+    const tr = document.createElement('tr');
+    [TABS[id], source[id].kind === 'upload' ? 'Uploaded: ' + source[id].name : 'Sample data', String(raw[id].length)].forEach(t => { const td = document.createElement('td'); td.textContent = t; tr.append(td); });
+    return tr;
+  }));
+}
+const pending = [];
+function guessTab(name) {
+  const n = name.toLowerCase();
+  if (/channel[\s_-]*b/.test(n)) return 'chB';
+  if (/channel[\s_-]*a/.test(n)) return 'chA';
+  if (n.includes('target')) return 'targets';
+  if (n.includes('pacing') || n.includes('curve')) return 'curve';
+  if (n.includes('benchmark')) return 'benchmarks';
+  return '';
+}
+function renderPending() {
+  const box = document.getElementById('csv-list'); box.replaceChildren();
+  pending.forEach((p, i) => {
+    const d = document.createElement('div'); d.className = 'ddt-file';
+    const nm = document.createElement('span'); nm.textContent = p.file.name;
+    const sel = document.createElement('select'); sel.setAttribute('aria-label', 'Tab for ' + p.file.name);
+    sel.append(new Option('Choose the tab…', ''), ...Object.entries(TABS).map(([id, t]) => new Option(t, id)));
+    sel.value = p.tab; sel.onchange = () => { p.tab = sel.value; };
+    d.append(nm, sel); box.append(d);
+  });
+}
+function setMsg(t, cls) { const m = document.getElementById('csv-msg'); m.textContent = t; m.className = 'ddt-msg ' + (cls || ''); }
+document.getElementById('csv-files').addEventListener('change', async ev => {
+  pending.length = 0;
+  for (const f of ev.target.files) pending.push({ file: f, text: await f.text(), tab: guessTab(f.name) });
+  renderPending(); setMsg(pending.length ? 'Check the tab chosen for each file, then press Apply files.' : '', '');
+});
+document.getElementById('csv-apply').addEventListener('click', () => {
+  if (!pending.length) { setMsg('Add at least one CSV file first.', 'err'); return; }
+  const errs = [], okTabs = [];
+  pending.forEach(p => {
+    if (!p.tab) { errs.push(p.file.name + ': choose which tab this file belongs to.'); return; }
+    const values = parseCSV(p.text);
+    const headers = (values[0] || []).map(h => String(h).trim());
+    const missing = CONTRACT[p.tab].filter(h => !headers.includes(h));
+    if (missing.length) { errs.push(p.file.name + ' does not match ' + TABS[p.tab] + '. Missing columns: ' + missing.join(', ') + '. Not applied.'); return; }
+    raw[p.tab] = loader(values).rows; source[p.tab] = { kind: 'upload', name: p.file.name }; okTabs.push(TABS[p.tab]);
+  });
+  setMsg((okTabs.length ? 'Applied: ' + okTabs.join(', ') + '. ' : '') + errs.join(' '), errs.length ? 'err' : 'good');
+  if (okTabs.length) { pending.length = 0; renderPending(); document.getElementById('csv-files').value = ''; render(); }
+});
+document.getElementById('csv-reset').addEventListener('click', () => { loadSnapshot(); pending.length = 0; renderPending(); document.getElementById('csv-files').value = ''; setMsg('Back to the sample data.', 'good'); render(); });
+
+/* ---------- start ---------- */
+loadSnapshot();
+render();
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(render, 150); });
+</script>

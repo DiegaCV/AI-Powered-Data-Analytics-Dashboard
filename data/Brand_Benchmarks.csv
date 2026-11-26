@@ -1,0 +1,11 @@
+Campaign,Campaign Date,Brand,Platform,GMV,Orders,Items Sold,Views,Comments,Conversion (Orders / Views),AOV,Comments per 1k Views,Ads Cost,Paid Boost ROI (last),Sessions,Source
+9.9,2026-09-09,Brand D,Channel A,"18,646.82","1,814","2,197","65,111","2,758",2.79%,10.28,42.4,,,1,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand D,Channel B,"7,274.10",,982,"35,830","1,860",,,51.9,283.02,31.07,1,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand B,Channel A,"5,107.47",408,503,"10,018",333,4.07%,12.52,33.2,,,2,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand B,Channel B,741.89,,99,"4,080",182,,,44.6,86.08,6.84,2,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand F,Channel A,"10,550.31",832,901,"86,752","3,116",0.96%,12.68,35.9,,,1,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand F,Channel B,"3,363.34",311,362,"47,230","2,210",0.66%,10.81,46.8,995.03,4.09,1,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand A,Channel B,357.97,,270,"9,590",335,,,34.9,47.91,8.3,2,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand C,Channel A,"7,185.86",685,894,"10,638",587,6.44%,10.49,55.2,,,3,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand C,Channel B,"1,719.00",,394,"5,850",511,,,87.4,9.93,,3,"Final snapshot of each session, summed"
+9.9,2026-09-09,Brand E,Channel A,"99,934.66",721,736,"57,836","4,376",1.25%,138.61,75.7,,,2,"Final snapshot of each session, summed"
