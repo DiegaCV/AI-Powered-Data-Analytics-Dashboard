@@ -2,7 +2,35 @@
 
 An interactive control-tower dashboard that tracks hourly revenue (GMV) against plan during a one-day sales peak, forecasts where each brand will close, and turns variances into rule-based interventions.
 
-**Live view:** open `index.html` in a browser (no build, no server). With GitHub Pages enabled it is hosted directly from this repository.
+**Live demo:** https://diegacv.github.io/AI-Powered-Data-Analytics-Dashboard/ (interactive: pick the peak event, filter by channel, replay the day hour by hour).
+
+## Screenshots
+
+**Overview at the end of the peak day.** Interventions, portfolio KPIs and the case brief.
+
+![Overview at end of day](screenshots/01-overview-end-of-day.png)
+
+**Replaying the day at 12.00.** The same view mid-day, when interventions were still possible.
+
+![Overview replayed at 12.00](screenshots/02-overview-replay-12h.png)
+
+**Cumulative GMV against the plan curve.**
+
+![Cumulative GMV vs plan curve](screenshots/03-cumulative-gmv-vs-plan.png)
+
+**Driver analysis by hour.**
+
+![Driver analysis](screenshots/04-driver-analysis.png)
+
+**Brand scorecard.**
+
+![Brand scorecard](screenshots/05-brand-scorecard.png)
+
+**Mobile view.**
+
+<img src="screenshots/06-mobile.png" alt="Mobile view" width="320">
+
+To run it locally instead, download `index.html` and open it in any browser. No installation is needed.
 
 > Revenue is shown in euros (converted from the original currency at a fixed 1 EUR = 20,140 IDR). All brand and channel names are masked (Brand A–F, Channel A and B). The figures are real extracts from a live campaign, kept for realism. No client, company or platform identifiers remain in the data or code.
 
